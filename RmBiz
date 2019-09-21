@@ -1,6 +1,61 @@
 #!/bin/bash
 # Author: Kent Chadwick
-# Description:
+# Description: Removes business entries based on user input of business name or contact name
 #
+echo "Please enter the name of the business or contact you would like to remove:"
+read input
+echo
+# Count the number of entries that match the user's search input, and store the value in $inputCount
+inputCount=$(grep -ci $input BusinessDetails)
 
-
+# Display different options depending on the value of $inputCount
+if [ $inputCount -eq 0 ]
+then
+	echo "Your search didn't match any records in  our adress book."
+	echo "Would you like to search again? (y/n)"
+	read ans1
+	if [[ $ans1 == y* || $ans1 == Y* ]]
+	then
+		echo
+		./RmBiz
+	else
+		echo
+		echo "Good bye!"
+		echo
+		exit 0
+	fi
+elif [ $inputCount -gt 1 ]
+then
+	echo "Your search matched multiple records:"
+	echo
+	grep -in $input BusinessDetails
+	echo
+	echo "Which record would you like to remove?"
+	# Implement case menu to delete entry
+else
+	echo "Your search matched the following record:"
+	echo
+	grep -i $input BusinessDetails
+	echo
+	echo "Would you like to delete this entry? (y/n)"
+	echo
+	read ans2
+	if [ $ans2 == "y" ]
+	then
+		# Delete the entry
+		echo "Entry deleted."
+	else
+		echo "Would you like to perform another search? (y/n)"
+		read ans3
+		if [ $ans3 == "y" ]
+		then
+			echo
+			./RmBiz
+		else
+			echo "Good bye!"
+			echo
+		fi
+	fi
+fi
+# awk '/$input/ {print $1,$2}' BusinessDetails
+# grep $input BusinessDetails
