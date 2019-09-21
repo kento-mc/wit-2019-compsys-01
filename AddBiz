@@ -1,6 +1,22 @@
 #!/bin/bash
 # Author: Kent Chadwick
-# Description:
+# Description: Adds new business records to the "BusinessDetails" file
 #
-
-
+echo "Please enter the business name:"
+read bizName
+echo
+echo "Please enter the contact person's first and last name:"
+read contactName
+echo
+echo "Please enter the business address:"
+read bizAddress
+echo
+echo "Please enter the contact person's mobile number:"
+read contactNum
+echo
+echo "Please enter contact person's email address:"
+read contactEmail
+echo
+# Add trimming of whitespace from strings
+echo "$bizName $contactName $bizAddress $contactNum $contactEmail" >> BusinessDetails
+cat BusinessDetails
