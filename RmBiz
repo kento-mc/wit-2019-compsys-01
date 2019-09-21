@@ -35,15 +35,17 @@ then
 else
 	echo "Your search matched the following record:"
 	echo
-	grep -i $input BusinessDetails
+	singleResult=$(grep -i $input BusinessDetails)
+	echo $singleResult
 	echo
 	echo "Would you like to delete this entry? (y/n)"
-	echo
 	read ans2
 	if [ $ans2 == "y" ]
 	then
-		# Delete the entry
+		sed -i "/$singleResult/d" BusinessDetails
+		echo
 		echo "Entry deleted."
+		echo
 	else
 		echo "Would you like to perform another search? (y/n)"
 		read ans3
@@ -52,6 +54,7 @@ else
 			echo
 			./RmBiz
 		else
+			echo
 			echo "Good bye!"
 			echo
 		fi
