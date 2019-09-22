@@ -1,6 +1,106 @@
 #!/bin/bash
 # Author: Kent Chadwick
-# Description:
+# Description: Menu system to drive the business contact script
 #
+# command to select email address(es) from file: grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" BusinessDetails
+
+echo Welcome $USER
+echo "~~~~~~~~~~~~~~~~~~~~"
+echo " M A I N    M E N U"
+echo "~~~~~~~~~~~~~~~~~~~~"
+echo "1) Add a new Business"
+echo "2) Remove an existing Business"
+echo "3) Search for a Business"
+echo "4) Email Business(es)"
+echo "~~~~~~~~~~~~~~~~~~~~"
+echo "0) Exit"
+echo "~~~~~~~~~~~~~~~~~~~~"
+read -p "Menu choice: " option
+
+case $option in
+1)
+	echo
+	echo "Please enter the business name:"
+	read bizName
+	echo
+	echo "Please enter the contact person's first and last name:"
+	read contactName
+	echo
+	echo "Please enter the business address:"
+	read bizAddress
+	echo
+	echo "Please enter the contact person's mobile number:"
+	read contactNum
+	echo
+	echo "Please enter contact person's email address:"
+	read contactEmail
+	echo
+	./AddBiz "$bizName" "$contactName" "$bizAddress" "$contactNum" "$contactEmail"
+	echo
+	echo "New Business - \"$bizName\" - added."
+	echo
+	./Menu
+	;;
+2)
+	menu=true
+	while [ $menu == true ]
+	do
+		echo "~~~~~~~~~~~~~~~~~~~~"
+		echo "Search for Business"
+		echo "to remove by:"
+		echo "~~~~~~~~~~~~~~~~~~~~"
+		echo "1) Business name"
+		echo "2) Contact name"
+		echo "~~~~~~~~~~~~~~~~~~~~"
+		echo "3) Return to main menu"
+		echo "~~~~~~~~~~~~~~~~~~~~"
+		echo "0) Exit"
+		echo "~~~~~~~~~~~~~~~~~~~~"
+		read -p "Menu Choice: " option2
+
+		case $option2 in
+		1)
+
+			;;
+		2)
+
+			;;
+		3)
+			./Menu
+			;;
+		0)
+			menu=false
+			echo
+			echo "Goodbye!"
+			echo
+			exit 0
+			;;
+		*)
+			echo
+			echo "Invalid input. Please enter a number between 1 & 3, or 0"
+			;;
+		esac
+	done
+	;;
+3)
+	#
+	;;
+4)
+	#
+	;;
+0)
+	echo
+	echo "Goodbye!"
+	echo
+	exit 0
+	;;
+*)
+	echo
+        echo "Invalid input. Please enter a number between 1 & 4, or 0"
+	./Menu
+	;;
+esac
+
+exit 0
 
 

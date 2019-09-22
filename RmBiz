@@ -11,7 +11,7 @@ inputCount=$(grep -ci $input BusinessDetails)
 # Display different options depending on the value of $inputCount
 if [ $inputCount -eq 0 ]
 then
-	echo "Your search didn't match any records in  our adress book."
+	echo "Your search didn't match any records in our address book."
 	echo "Would you like to search again? (y/n)"
 	read ans1
 	if [[ $ans1 == y* || $ans1 == Y* ]]
