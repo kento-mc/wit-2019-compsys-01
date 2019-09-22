@@ -20,19 +20,19 @@ read -p "Menu choice: " option
 case $option in
 1)	# Read in uper input for Business details and pass the variables to the AddBiz script as arguments
 	echo
-	echo "Please enter the business name:"
+	echo "Please enter the business name: "
 	read bizName
 	echo
-	echo "Please enter the contact person's first and last name:"
+	echo "Please enter the contact person's first and last name: "
 	read contactName
 	echo
-	echo "Please enter the business address:"
+	echo "Please enter the business address: "
 	read bizAddress
 	echo
-	echo "Please enter the contact person's mobile number:"
+	echo "Please enter the contact person's mobile number: "
 	read contactNum
 	echo
-	echo "Please enter contact person's email address:"
+	echo "Please enter contact person's email address: "
 	read contactEmail
 	echo
 	./AddBiz "$bizName" "$contactName" "$bizAddress" "$contactNum" "$contactEmail"
@@ -61,10 +61,17 @@ case $option in
 
 		case $option2 in
 		1)
-
+			echo
+			read -p "Please enter the Business name: " bizName
+			echo
+			./RmBiz 1 $bizName
+			#awk -F " ; " '{print $1}' BusinessDetails | grep -i $bizNAme | sort
+			#./RmBiz
 			;;
 		2)
-
+			echo
+			read -p "Please enter the Contact name: " contactName
+			awk -F " ; " '{print $2}' BusinessDetails | grep -i $contactName | sort
 			;;
 		3)	# Re-run the Menu script
 			./Menu
