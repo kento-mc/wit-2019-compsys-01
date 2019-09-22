@@ -30,25 +30,38 @@ then
 	fi
 elif [ $inputCount -gt 1 ]
 then
-	echo "Your search matched multiple records:"
-	echo
-	cat input | grep -in
+	echo "Your search matched multiple records."
 	echo
 	echo "Which record would you like to remove?"
 	echo "~~~~~~~~~~~~~~~~~~~~"
 	# While loop to create numbered menu based on the number of entries returned by the user search
+	selectFrom=""	# Variable to store count number paired with the entry string so it can be selected from the menu option
 	count=1
 	while [ $count -le $inputCount ]; do
 		menuLine=$(sed -n "${count}p" BusinessDetails) 
 		echo "$count) $menuLine"
+		newL=$'\n'
+		selectFrom+="count$count ; $menuLine$newL"
 		((count++))
 	done
 	echo "~~~~~~~~~~~~~~~~~~~~"
-	mainMenOption=$($inputCount + 1)
+	mainMenOption=$(($inputCount + 1))
 	echo "$mainMenOption) Return to Main Menu"
 	echo "~~~~~~~~~~~~~~~~~~~~"
 	echo "0) Exit"
-	read -p "Menu Choice: " choice
+        echo "~~~~~~~~~~~~~~~~~~~~"
+	read -p "Menu choice: " choice
+	if [ $choice -eq  $mainMenOption ]; then
+		./Menu
+	elif [ $choice -eq 0 ]; then
+		echo
+		echo "Goodbye!"
+		echo
+		exit 0
+	else
+		echo "$selectFrom" | grep "count$choice" | cut -c 10-
+		
+	fi
 else
 	echo "Your search matched the following record:"
 	echo

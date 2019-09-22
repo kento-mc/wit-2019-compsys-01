@@ -57,7 +57,7 @@ case $option in
 		echo "~~~~~~~~~~~~~~~~~~~~"
 		echo "0) Exit"
 		echo "~~~~~~~~~~~~~~~~~~~~"
-		read -p "Menu Choice: " option2
+		read -p "Menu choice: " option2
 
 		case $option2 in
 		1)
