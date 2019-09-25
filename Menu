@@ -90,19 +90,20 @@ case $option in
 		esac
 	done
 	;;
-3)
+3)	#
+	read -p "Please search for Business name, number, address, etc.:" find
+	./FindBiz $find
+	;;
+4)	#
 	#
 	;;
-4)
-	#
-	;;
-0)
+0)	#
 	echo
 	echo "Goodbye!"
 	echo
 	exit 0
 	;;
-*)
+*)	#
 	echo
         echo "Invalid input. Please enter a number between 0 & 4."
 	./Menu
