@@ -4,9 +4,9 @@
 #
 # if statement determines if the user is searching for Business or Contact name via $1
 if [ $1 -eq 1 ]; then
-	input=$(awk -F " ; " '{print $1}' BusinessDetails | grep -i $2 | sort)
+	input=$(awk -F "\t" '{print $1}' BusinessDetails | grep -i $2 | sort)
 else
-	input=$(awk -F " ; " '{print $2}' BusinessDetails | grep -i $2 | sort)
+	input=$(awk -F "\t" '{print $2}' BusinessDetails | grep -i $2 | sort)
 fi
 
 # Count the number of entries that match the user's search input, and store the value in $inputCount
@@ -16,12 +16,23 @@ inputCount=$(echo "$input" | grep -ci $2)
 if [ $inputCount -eq 0 ]
 then
 	echo "Your search didn't match any records in our address book."
-	echo "Would you like to search again? (y/n)"
-	read ans1
+	read -p "Would you like to perform another search? (y/n)" ans1
 	if [[ $ans1 == y* || $ans1 == Y* ]]
 	then
-		echo
-		./RmBiz
+		case $1 in
+                1)
+                        echo
+                        read -p "Please enter the Business name: " bizName
+                        echo
+                        ./RmBiz 1 $bizName
+                        ;;
+                2)
+                        echo
+                        read -p "Please enter the Contact name: " contactName
+                        echo
+			./RmBiz 2 $contactName
+                        ;;
+		esac
 	else
 		echo
 		echo "Good bye!"
@@ -32,18 +43,21 @@ elif [ $inputCount -gt 1 ]
 then
 	echo "Your search matched multiple records."
 	echo
+	subMenu=true
+	while [ "$subMenu" == true ]; do
 	echo "Which record would you like to remove?"
 	echo "~~~~~~~~~~~~~~~~~~~~"
 	# While loop to create numbered menu based on the number of entries returned by the user search
-	selectFrom=""	# Variable to store count number paired with the entry string so it can be selected from the menu option
 	count=1
 	while [ $count -le $inputCount ]; do
-		menuLine=$(sed -n "${count}p" BusinessDetails) 
-		echo "$count) $menuLine"
+		inputTerm=$(echo "$input" | sed -n "${count}p")
+		menuLine=$(awk -v var="$inputTerm" '{if ($1 == var) print $0;}' BusinessDetails)
 		newL=$'\n'
-		selectFrom+="count$count ; $menuLine$newL"
+		menuLines+="$count) $menuLine$newL"
+		selectFrom+="count$count $menuLine$newL"
 		((count++))
 	done
+	echo "$menuLines" | column -t -s $'\t' -n
 	echo "~~~~~~~~~~~~~~~~~~~~"
 	mainMenOption=$(($inputCount + 1))
 	echo "$mainMenOption) Return to Main Menu"
@@ -51,43 +65,129 @@ then
 	echo "0) Exit"
         echo "~~~~~~~~~~~~~~~~~~~~"
 	read -p "Menu choice: " choice
-	if [ $choice -eq  $mainMenOption ]; then
+	if [ $choice -eq  $mainMenOption ] 2> /dev/null
+	then
+		subMenu=false
 		./Menu
-	elif [ $choice -eq 0 ]; then
+	elif [ $choice -eq 0 ] 2> /dev/null
+	then
+		subMenu=false
 		echo
 		echo "Goodbye!"
 		echo
 		exit 0
+	elif [ $choice -lt $mainMenOption ] 2> /dev/null
+	then
+		subMenu=false
+		echo
+		echo "Are you sure you would like to delete the following Business?"
+		echo
+		if [ $choice -lt 10 ]; then
+			chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 8-)
+			echo "$choice) $chosenEntry"
+		elif [ $choice -lt 100 ]; then
+			chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 9-)
+			echo "$choice) $chosenEntry"
+		else
+			chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 10-)
+			echo "$choice) $chosenEntry"
+		fi
+		echo
+		read -p "(y/n): " sureDelete
+		if [[ $sureDelete == y* || $sureDelete == Y* ]]; then
+			if [ $1 -eq 1 ]; then
+				bizName=$(echo "$chosenEntry" | awk '{print $1}')
+				toDelete=$(awk -v var="$bizName" '{if ($1 == var) print $0;}' BusinessDetails)
+			else
+				contactName=$(echo "$chosenEntry" | awk '{print $2}')
+                                toDelete=$(awk -v var="$contactName" '{if ($1 == var) print $0;}' BusinessDetails)
+			fi
+			sed -i "/$toDelete/d" BusinessDetails
+                	echo
+                	echo "Business record deleted."
+                	echo
+		else
+			echo
+			read -p "Would you like to perform another search? (y/n): " ans4
+        		if [[ $ans4 == y* || $ans4 == Y* ]]; then
+                		case $1 in
+                		1)
+                        		echo
+                        		read -p "Please enter the Business name: " bizName
+                        		echo
+                        		./RmBiz 1 $bizName
+                        		;;
+                		2)
+                        		echo
+                        		read -p "Please enter the Contact name: " contactName
+                        		echo
+                        		./RmBiz 2 $contactName
+        	        		;;
+                		esac
+        		else
+                		subMenu=false
+				echo
+                		echo "Good bye!"
+                		echo
+                		exit 0
+        		fi
+		fi
 	else
-		echo "$selectFrom" | grep "count$choice" | cut -c 10-
-		
+		echo
+		echo "Ivalid input. Please enter a number between 0 and $mainMenOption."
+		echo
+		menuLines=""
+		selectFrom=""
 	fi
+	done
 else
-	echo "Your search matched the following record:"
+	echo "Your search matched the following record."
+	echo "Would you like to delete this Business?"
+	inputTerm=$(echo "$input" | sed -n 1p)
+        singleResult=$(awk -v var="$inputTerm" '{if ($1 == var) print $0;}' BusinessDetails)
+
+
+
+
+# 	bizName=$(echo "$2" | awk '{print $1}')
+ #                       toDelete=$(awk -v var="$bizName" '{if ($1 == var) print $0;}' BusinessDetails)
+
+#	singleResult=$(grep -i $input BusinessDetails)
 	echo
-	singleResult=$(grep -i $input BusinessDetails)
 	echo $singleResult
 	echo
-	echo "Would you like to delete this entry? (y/n)"
-	read ans2
-	if [ $ans2 == "y" ]
+	read -p "(y/n): " ans2
+	if [[ $ans2 == y* || $ans2 == Y* ]]
 	then
 		sed -i "/$singleResult/d" BusinessDetails
 		echo
-		echo "Entry deleted."
+		echo "Business record deleted."
 		echo
+		./Menu
 	else
-		echo "Would you like to perform another search? (y/n)"
-		read ans3
-		if [ $ans3 == "y" ]
-		then
-			echo
-			./RmBiz
-		else
-			echo
-			echo "Good bye!"
-			echo
-		fi
+		read -p "Would you like to perform another search? (y/n): " ans3
+	        if [[ $ans3 == y* || $ans3 == Y* ]]; then
+                	case $1 in
+                	1)
+                        	echo
+	                        read -p "Please enter the Business name: " bizName
+		                 echo
+                	        ./RmBiz 1 $bizName
+                        	;;
+                	2)
+                        	echo
+                        	read -p "Please enter the Contact name: " contactName
+                        	echo
+                        	./RmBiz 2 $contactName
+                        	;;
+                	esac
+        	else
+                	echo
+                	echo "Good bye!"
+                	echo
+                	exit 0
+        	fi
+
 	fi
 fi
 # awk '/$input/ {print $1,$2}' BusinessDetails
