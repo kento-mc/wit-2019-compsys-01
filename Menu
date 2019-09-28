@@ -91,7 +91,7 @@ case $option in
 	done
 	;;
 3)	#
-	read -p "Please search for Business name, number, address, etc.:" find
+	read -p "Please search for Business name, number, address, etc.: " find
 	./FindBiz $find
 	;;
 4)	#

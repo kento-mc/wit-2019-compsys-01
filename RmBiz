@@ -141,6 +141,7 @@ then
 		fi
 	done	# Close the while loop for the sub-menu
 else
+	echo
 	echo "Your search matched the following record."
 	echo "Would you like to delete this Business?"
 	inputTerm=$(echo "$input" | sed -n 1p)
