@@ -8,6 +8,7 @@ inputCount=$(grep -ci $1 BusinessDetails)
 # Display different options depending on the value of $inputCount
 if [ $inputCount -eq 0 ]
 then
+	echo
 	echo "Your search didn't match any records in our address book."
 	read -p "Would you like to perform another search? (y/n)" ans1
 	if [[ $ans1 == y* || $ans1 == Y* ]]
@@ -24,6 +25,7 @@ then
 	fi
 elif [ $inputCount -gt 1 ]
 then
+	echo
 	echo "Your search matched multiple records."
 	echo
 	subMenu1=true
@@ -64,19 +66,21 @@ then
 			echo
 			echo "~~~~~~~~~~~~~~~~~~~~"
 			echo
+			singleResultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t----------\t----------\t----------\t----------\n'
 			if [ $choice -lt 10 ]; then
-				singleResult=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 8-)
-				echo $singleResult
+				singleResult=$(echo "$selectFrom" | grep "count$choice" | cut -c 8-)
+				singleResultMenu+="$singleResult"
+				echo "$singleResultMenu" | column -t -s $'\t' -n 
 			elif [ $choice -lt 100 ]; then
-				singleResult=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 9-)
+				singleResult=$(echo "$selectFrom" | grep "count$choice" | cut -c 9-)
 				echo $singleResult
 			else
-				singleResult=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 10-)
+				singleResult=$(echo "$selectFrom" | grep "count$choice" | cut -c 10-)
 				echo $singleResult
 			fi
 			echo
 			echo "~~~~~~~~~~~~~~~~~~~~"
-			echo "1) Update Contact"
+			echo "1) Update Business Record"
 			echo "~~~~~~~~~~~~~~~~~~~~"
 			echo "2) Return to Main Menu"
 			echo "~~~~~~~~~~~~~~~~~~~~"
@@ -88,8 +92,9 @@ then
 			1)	echo
 				echo "Which field would you like to update?"
 				echo
-				echo singleResultMenu="$singleResult + 'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n---\t---\t---\t---\t---'"
-				echo $singleResultMenu
+				#singleResultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t----------\t----------\t----------\t----------\n'
+				#singleResultMenu+="$singleResult"
+				echo "$singleResultMenu" | column -t -s $'\t' -n
 				echo
 				echo "~~~~~~~~~~~~~~~~~~~~"
 				echo "1) Business Name"
@@ -106,9 +111,10 @@ then
 
 				case $choice2 in
 				1)	echo
-					read -p "Please enter the Business Name: " newBizName
-					toReplace=$(echo $singleResult | awk -F "\n" '{print $1}')
-					grep "$toReplace" BusinessDetails | sed 's/"$toReplace"/"$newBizName"'
+					read -p "Please enter the new Business Name: " newBizName
+					toReplace=$(echo "$singleResult" | awk -F "\t" '{print $1}')
+					cat BusinessDetails | grep "$toReplace"
+					grep "$toReplace" BusinessDetails | sed -i "s/$toReplace/$newBizName/"
 					echo
 					echo "Business Updated."
 					echo
