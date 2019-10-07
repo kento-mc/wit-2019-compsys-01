@@ -3,7 +3,7 @@
 # Description: Menu system to drive the business contact script
 #
 # command to select email address(es) from file: grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" BusinessDetails
-
+echo
 echo Welcome $USER
 echo "~~~~~~~~~~~~~~~~~~~~"
 echo " M A I N    M E N U"

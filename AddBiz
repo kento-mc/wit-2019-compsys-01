@@ -1,5 +1,42 @@
-#!/bin/bash
+#!/bin/bash -x
 # Author: Kent Chadwick
 # Description: Adds new business records to the "BusinessDetails" file
 #
-echo "$1	$2	$3	$4	$5" >> BusinessDetails
+newBiz="$1	$2	$3	$4	$5"
+
+# Count the number of records that match the user's search input, and store the value in $inputCount
+inputCount=$(grep -ci "$newBiz" BusinessDetails)
+
+if [ $inputCount -gt 0 ]; then
+	echo
+	echo "An identical record already exists!"
+	read -p "Would you like to attempt adding a new business again? (y/n): " ans
+        if [[ $ans == y* || $ans == Y* ]]; then
+		 # Read in uper input for Business details and pass the variables to the AddBiz script as arguments
+	        echo
+	        echo "Please enter the business name: "
+	        read bizName
+	        echo
+	        echo "Please enter the contact person's first and last name: "
+	        read contactName
+	        echo
+	        echo "Please enter the business address: "
+	        read bizAddress
+	        echo
+	        echo "Please enter the contact person's mobile number: "
+	        read contactNum
+	        echo
+	        echo "Please enter contact person's email address: "
+	        read contactEmail
+	        echo
+	        ./AddBiz "$bizName" "$contactName" "$bizAddress" "$contactNum" "$contactEmail"
+	        echo
+	        echo "New business - \"$bizName\" - added."
+	        echo
+
+	else
+		./Menu
+	fi
+else
+	echo "$newBiz" >> BusinessDetails
+fi
