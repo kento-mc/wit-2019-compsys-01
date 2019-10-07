@@ -111,29 +111,65 @@ then
 
 				case $choice2 in
 				1)	echo
-					read -p "Please enter the new Business Name: " newBizName
+					read -p "Please enter the new business name: " newBizName
 					toReplace=$(echo "$singleResult" | awk -F "\t" '{print $1}')
-					echo
 					firstResult="$singleResult"
 					updatedResult=${singleResult/$toReplace/$newBizName}
 					sed -i "s/${firstResult}/${updatedResult}/" BusinessDetails
 					echo
-					echo "Business Name updated from \"$toReplace\" to \"$newBizName\"."
+					echo "Business name updated from \"$toReplace\" to \"$newBizName\"."
 					echo
 					;;
-				2)
+				2)	echo
+                                        read -p "Please enter the new contact name: " newContactName
+                                        toReplace=$(echo "$singleResult" | awk -F "\t" '{print $2}')
+                                        firstResult="$singleResult"
+                                        updatedResult=${singleResult/$toReplace/$newContactName}
+                                        sed -i "s/${firstResult}/${updatedResult}/" BusinessDetails
+                                        echo
+                                        echo "Contact name updated from \"$toReplace\" to \"$newContactName\"."
+                                        echo
 					;;
-				3)
+				3)	echo
+                                        read -p "Please enter the new address: " newAddress
+                                        toReplace=$(echo "$singleResult" | awk -F "\t" '{print $3}')
+                                        firstResult="$singleResult"
+                                        updatedResult=${singleResult/$toReplace/$newAddress}
+                                        sed -i "s/${firstResult}/${updatedResult}/" BusinessDetails
+                                        echo
+                                        echo "Address updated from \"$toReplace\" to \"$newAddress\"."
+                                        echo
 					;;
-				4)
+				4)	echo
+                                        read -p "Please enter the new phone number: " newPhoneNo
+                                        toReplace=$(echo "$singleResult" | awk -F "\t" '{print $4}')
+                                        firstResult="$singleResult"
+                                        updatedResult=${singleResult/$toReplace/$newPhoneNo}
+                                        sed -i "s/${firstResult}/${updatedResult}/" BusinessDetails
+                                        echo
+                                        echo "Phone number updated from \"$toReplace\" to \"$newPhoneNo\"."
+                                        echo
 					;;
-				5)
+				5)	echo
+                                        read -p "Please enter the new email address: " newEmail
+                                        toReplace=$(echo "$singleResult" | awk -F "\t" '{print $5}')
+                                        firstResult="$singleResult"
+                                        updatedResult=${singleResult/$toReplace/$newEmail}
+                                        sed -i "s/${firstResult}/${updatedResult}/" BusinessDetails
+                                        echo
+                                        echo "Email address updated from \"$toReplace\" to \"$newEmail\"."
+                                        echo
 					;;
-				6)
+				6)	./Menu
 					;;
-				0)
+				0)	echo
+					echo "Goodbye!"
+					echo
+					exit 0
 					;;
-				*)
+				*)	echo
+        	                        echo "Invalid input. Please enter a number between 0 and 2."
+	                                echo
 					;;
 				esac
 				;;
