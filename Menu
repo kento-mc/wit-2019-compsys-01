@@ -6,7 +6,7 @@
 echo
 echo Welcome $USER
 echo "~~~~~~~~~~~~~~~~~~~~"
-echo " M A I N    M E N U"
+echo " M A I N    M E N U "
 echo "~~~~~~~~~~~~~~~~~~~~"
 echo "1) Add a new Business"
 echo "2) Remove an existing Business"
@@ -47,8 +47,7 @@ case $option in
 	while [ $menu == true ]
 	do
 		echo "~~~~~~~~~~~~~~~~~~~~"
-		echo "Search for Business"
-		echo "to remove by:"
+		echo "Search for business to remove by either:"
 		echo "~~~~~~~~~~~~~~~~~~~~"
 		echo "1) Business name"
 		echo "2) Contact name"
@@ -91,11 +90,38 @@ case $option in
 	done
 	;;
 3)	#
-	read -p "Please search for Business name, number, address, etc.: " find
+	read -p "Please search for Business name, number, address, etc: " find
 	./FindBiz $find
 	;;
 4)	#
-	#
+	echo
+	echo "~~~~~~~~~~~~~~~~~~~~"
+        echo "E M A I L    M E N U"
+        echo "~~~~~~~~~~~~~~~~~~~~"
+        echo "1) Search for business to email"
+        echo "2) List buisinesses and their email addresses to select from"
+	echo "3) Email all businesses"
+        echo "~~~~~~~~~~~~~~~~~~~~"
+        echo "4) Return to main menu"
+        echo "~~~~~~~~~~~~~~~~~~~~"
+        echo "0) Exit"
+        echo "~~~~~~~~~~~~~~~~~~~~"
+        read -p "Menu choice: " option3
+
+        case $option3 in
+
+	1)
+
+	2)
+
+	3)
+
+	4)
+
+	0)
+
+	*)
+
 	;;
 0)	#
 	echo
