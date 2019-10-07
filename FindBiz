@@ -113,10 +113,12 @@ then
 				1)	echo
 					read -p "Please enter the new Business Name: " newBizName
 					toReplace=$(echo "$singleResult" | awk -F "\t" '{print $1}')
-					cat BusinessDetails | grep "$toReplace"
-					grep "$toReplace" BusinessDetails | sed -i "s/$toReplace/$newBizName/"
 					echo
-					echo "Business Updated."
+					firstResult="$singleResult"
+					updatedResult=${singleResult/$toReplace/$newBizName}
+					sed -i "s/${firstResult}/${updatedResult}/" BusinessDetails
+					echo
+					echo "Business Name updated from \"$toReplace\" to \"$newBizName\"."
 					echo
 					;;
 				2)
@@ -160,3 +162,4 @@ else
 	echo "Your search matched the following record."
 	echo
 fi
+
