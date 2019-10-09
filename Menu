@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # Author: Kent Chadwick
 # Description: Menu system to drive the business contact script
 #
@@ -122,91 +122,91 @@ case $option in
 			#count results from grep and store in variable
 			inputCount=$(echo "$matches" | grep -ci "$search")
 
-#			if [ $inputCount -gt 1 ]; then
-echo yo				echo
-#				echo "Your search returned multiple records."
-#				echo
-#				echo "Would you like to email one of these businesses?"
-#		                echo "~~~~~~~~~~~~~~~~~~~~"
-#		                # While loop to create numbered menu based on the number of entries returned by the user search
-#		                count=1
-#		                while [ $count -le $inputCount ]; do
-#		                        inputTerm=$(echo "$matches" | sed -n "${count}p")
-#		                        menuLine=$(awk -v var="$inputTerm" '{if ($1 == var) print $0;}' BusinessDetails)
-#		                        newL=$'\n'
-#		                        menuLines+="$count) $menuLine$newL"
-#		                        selectFrom+="count$count $menuLine$newL"
-#		                        ((count++))
-#		                done
-#		                echo "$menuLines" | column -t -s $'\t' -n
-#		                echo "~~~~~~~~~~~~~~~~~~~~"
-#		                mainMenOption=$(($inputCount + 1))
-#		                echo "$mainMenOption) Return to Main Menu"
-#		                echo "~~~~~~~~~~~~~~~~~~~~"
-#		                echo "0) Exit"
-#		                echo "~~~~~~~~~~~~~~~~~~~~"
-#		                read -p "Menu choice: " choice
-#
-#				if [ $choice -eq  $mainMenOption ] 2> /dev/null
-#		                then
-#		                        #subMenu=false
-#		                        ./Menu
-#		                elif [ $choice -eq 0 ] 2> /dev/null
-#		                then
-#		                        #subMenu=false
-#		                        echo
-#		                        echo "Goodbye!"
-#		                        echo
-#		                        exit 0
-#		                elif [ $choice -lt $mainMenOption ] 2> /dev/null
-#		                then
-#		                        #subMenu=false
-#		                        echo
-#		                        echo "Is this the business you would like to email?"
-#		                        echo
-#		                        if [ $choice -lt 10 ]; then
-#		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 8-)
-#		                                echo "$choice) $chosenEntry"
-#		                        elif [ $choice -lt 100 ]; then
-#		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 9-)
-#		                                echo "$choice) $chosenEntry"
-#		                        else
-#		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 10-)
-#		                                echo "$choice) $chosenEntry"
-#		                        fi
-#					echo
-#					read -p "(y/n): " sureEmail
-#
-#					if [[ $sureEmail == y* || $sureEmail == Y* ]]; then
-#	                                	emailAdress=$(echo "$chosenEntry" | awk '{print $5}')
-#						echo
-#						read -p "Please enter the email subject line: " subject
-#						echo
-#						read -p "Please enter the email message: " message
-#						echo $message | mail -s $subject $emailAddress
-#						echo
-#						echo "Message sent to $emailAddress."
-#						echo
-#	                        	else
-#	                                	echo
-#	                                	read -p "Would you like to perform another search? (y/n): " ans4
-#	                                	echo
-#						#if [[ $ans4 == y* || $ans4 == Y* ]]; then
-#							#
-#						#else
-#							#
-#						#fi
-#					fi
-#				else
-#					#
-#				fi
-#				#select business to email
-#				#enter message
-#			elif [ $inputCount -eq 1 ]; then
-#				echo yop #single result
-#			else
-#				#zero results
-#			fi
+			if [ $inputCount -gt 1 ]; then
+				echo
+				echo "Your search returned multiple records."
+				echo
+				echo "Would you like to email one of these businesses?"
+		                echo "~~~~~~~~~~~~~~~~~~~~"
+		                # While loop to create numbered menu based on the number of entries returned by the user search
+		                count=1
+		                while [ $count -le $inputCount ]; do
+		                        menuLine=$(echo "$matches" | sed -n "${count}p")
+		                        #menuLine=$(awk -v var="$inputTerm" '{if ($1 == var) print $0;}' BusinessDetails)
+		                        newL=$'\n'
+		                        menuLines+="$count) $menuLine$newL"
+		                        selectFrom+="count$count $menuLine$newL"
+		                        ((count++))
+		                done
+		                echo "$menuLines" | column -t -s $'\t' -n
+		                echo "~~~~~~~~~~~~~~~~~~~~"
+		                mainMenOption=$(($inputCount + 1))
+		                echo "$mainMenOption) Return to Main Menu"
+		                echo "~~~~~~~~~~~~~~~~~~~~"
+		                echo "0) Exit"
+		                echo "~~~~~~~~~~~~~~~~~~~~"
+		                read -p "Menu choice: " choice
+
+				if [ $choice -eq  $mainMenOption ] 2> /dev/null
+		                then
+		                        #subMenu=false
+		                        ./Menu
+		                elif [ $choice -eq 0 ] 2> /dev/null
+		                then
+		                        #subMenu=false
+		                        echo
+		                        echo "Goodbye!"
+		                        echo
+		                        exit 0
+		                elif [ $choice -lt $mainMenOption ] 2> /dev/null
+		                then
+		                        #subMenu=false
+		                        echo
+		                        echo "Is this the business you would like to email?"
+		                        echo
+		                        if [ $choice -lt 10 ]; then
+		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 8-)
+		                                echo "$choice) $chosenEntry"
+		                        elif [ $choice -lt 100 ]; then
+		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 9-)
+		                                echo "$choice) $chosenEntry"
+		                        else
+		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 10-)
+		                                echo "$choice) $chosenEntry"
+		                        fi
+					echo
+					read -p "(y/n): " sureEmail
+
+					if [[ $sureEmail == y* || $sureEmail == Y* ]]; then
+						emailAddress=$(echo "$chosenEntry" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b")
+						echo
+						read -p "Please enter the email subject line: " subject
+						echo
+						read -p "Please enter the email message: " message
+						echo "$message" | mail -s $subject $emailAddress
+						echo
+						echo "Message sent to $emailAddress."
+						echo
+	                        	else
+	                                	echo
+	                                	read -p "Would you like to perform another search? (y/n): " ans4
+	                                	echo
+						if [[ $ans4 == y* || $ans4 == Y* ]]; then
+							echo something
+						else
+							echo something
+						fi
+					fi
+				else
+					echo something
+				fi
+				#select business to email
+				#enter message
+			elif [ $inputCount -eq 1 ]; then
+				echo "single result"
+			else
+				echo "zero results"
+			fi
 			;;
 		2)	#list all businesses
 			#select business to email
