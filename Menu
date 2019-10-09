@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # Author: Kent Chadwick
 # Description: Menu system to drive the business contact script
 #
@@ -41,7 +41,7 @@ case $option in
 	echo
 	./Menu
 	;;
-2)	# Run a sub-menu for removing a Business. It is enclosed in a while loop
+2)	# Run a sub-menu for removing a business. It is enclosed in a while loop
 	# to allow it to be reloaded repeatedly if the user's input is invalid.
 	menu=true
 	while [ $menu == true ]
@@ -93,38 +93,145 @@ case $option in
 	read -p "Please search for Business name, number, address, etc: " find
 	./FindBiz $find
 	;;
-4)	#
-	echo
-	echo "~~~~~~~~~~~~~~~~~~~~"
-        echo "E M A I L    M E N U"
-        echo "~~~~~~~~~~~~~~~~~~~~"
-        echo "1) Search for business to email"
-        echo "2) List buisinesses and their email addresses to select from"
-	echo "3) Email all businesses"
-        echo "~~~~~~~~~~~~~~~~~~~~"
-        echo "4) Return to main menu"
-        echo "~~~~~~~~~~~~~~~~~~~~"
-        echo "0) Exit"
-        echo "~~~~~~~~~~~~~~~~~~~~"
-        read -p "Menu choice: " option3
+4)	# Run a sub-menu for removing emailing. It is enclosed in a while loop
+        # to allow it to be reloaded repeatedly if the user's input is invalid.
+        menu=true
+        while [ $menu == true ]
+        do
+		echo
+		echo "~~~~~~~~~~~~~~~~~~~~"
+	        echo "E M A I L    M E N U"
+	        echo "~~~~~~~~~~~~~~~~~~~~"
+	        echo "1) Search for business to email"
+	        echo "2) List buisinesses and their email addresses to select from"
+		echo "3) Email all businesses"
+	        echo "~~~~~~~~~~~~~~~~~~~~"
+	        echo "4) Return to main menu"
+	        echo "~~~~~~~~~~~~~~~~~~~~"
+	        echo "0) Exit"
+	        echo "~~~~~~~~~~~~~~~~~~~~"
+	        read -p "Menu choice: " option3
 
-        case $option3 in
+	        case $option3 in
 
-	1)
+		1)	echo
+			#read in search term
+			read -p "Please enter the business name, contact name, email address, etc: " search
+			#grep BusinessDetails
+			matches=$(grep -i "$search" BusinessDetails)
+			#count results from grep and store in variable
+			inputCount=$(echo "$matches" | grep -ci "$search")
 
-	2)
-
-	3)
-
-	4)
-
-	0)
-
-	*)
-
+#			if [ $inputCount -gt 1 ]; then
+echo yo				echo
+#				echo "Your search returned multiple records."
+#				echo
+#				echo "Would you like to email one of these businesses?"
+#		                echo "~~~~~~~~~~~~~~~~~~~~"
+#		                # While loop to create numbered menu based on the number of entries returned by the user search
+#		                count=1
+#		                while [ $count -le $inputCount ]; do
+#		                        inputTerm=$(echo "$matches" | sed -n "${count}p")
+#		                        menuLine=$(awk -v var="$inputTerm" '{if ($1 == var) print $0;}' BusinessDetails)
+#		                        newL=$'\n'
+#		                        menuLines+="$count) $menuLine$newL"
+#		                        selectFrom+="count$count $menuLine$newL"
+#		                        ((count++))
+#		                done
+#		                echo "$menuLines" | column -t -s $'\t' -n
+#		                echo "~~~~~~~~~~~~~~~~~~~~"
+#		                mainMenOption=$(($inputCount + 1))
+#		                echo "$mainMenOption) Return to Main Menu"
+#		                echo "~~~~~~~~~~~~~~~~~~~~"
+#		                echo "0) Exit"
+#		                echo "~~~~~~~~~~~~~~~~~~~~"
+#		                read -p "Menu choice: " choice
+#
+#				if [ $choice -eq  $mainMenOption ] 2> /dev/null
+#		                then
+#		                        #subMenu=false
+#		                        ./Menu
+#		                elif [ $choice -eq 0 ] 2> /dev/null
+#		                then
+#		                        #subMenu=false
+#		                        echo
+#		                        echo "Goodbye!"
+#		                        echo
+#		                        exit 0
+#		                elif [ $choice -lt $mainMenOption ] 2> /dev/null
+#		                then
+#		                        #subMenu=false
+#		                        echo
+#		                        echo "Is this the business you would like to email?"
+#		                        echo
+#		                        if [ $choice -lt 10 ]; then
+#		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 8-)
+#		                                echo "$choice) $chosenEntry"
+#		                        elif [ $choice -lt 100 ]; then
+#		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 9-)
+#		                                echo "$choice) $chosenEntry"
+#		                        else
+#		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 10-)
+#		                                echo "$choice) $chosenEntry"
+#		                        fi
+#					echo
+#					read -p "(y/n): " sureEmail
+#
+#					if [[ $sureEmail == y* || $sureEmail == Y* ]]; then
+#	                                	emailAdress=$(echo "$chosenEntry" | awk '{print $5}')
+#						echo
+#						read -p "Please enter the email subject line: " subject
+#						echo
+#						read -p "Please enter the email message: " message
+#						echo $message | mail -s $subject $emailAddress
+#						echo
+#						echo "Message sent to $emailAddress."
+#						echo
+#	                        	else
+#	                                	echo
+#	                                	read -p "Would you like to perform another search? (y/n): " ans4
+#	                                	echo
+#						#if [[ $ans4 == y* || $ans4 == Y* ]]; then
+#							#
+#						#else
+#							#
+#						#fi
+#					fi
+#				else
+#					#
+#				fi
+#				#select business to email
+#				#enter message
+#			elif [ $inputCount -eq 1 ]; then
+#				echo yop #single result
+#			else
+#				#zero results
+#			fi
+			;;
+		2)	#list all businesses
+			#select business to email
+			#enter message
+			;;
+		3)	#enter message to send
+			# retrieve all businesses grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" BusinessDetails
+			;;
+		4) 	menu=false
+			./Menu
+			;;
+		0)	menu=false
+			echo
+			echo "Goodbye!"
+			echo
+			exit 0
+			;;
+		*)	echo
+	        	echo "Invalid input. Please enter a number between 0 & 4."
+			echo
+			;;
+		esac
+	done
 	;;
-0)	#
-	echo
+0)	echo
 	echo "Goodbye!"
 	echo
 	exit 0
