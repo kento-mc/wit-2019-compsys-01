@@ -28,7 +28,18 @@ if [ $inputCount -gt 0 ]; then
 	        echo
 	        echo "Please enter contact person's email address: "
 	        read contactEmail
-	        echo
+		emailRegEx="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b"
+		emailMenu=true
+		while [ $emailMenu == true ]; do
+			if [[ $contactEmail =~ $emailRegEx ]]; then
+				emailMenu=false
+			else
+				echo
+				echo "Invalid email address entered. Please enter the email address again: "
+				read contactEmail
+			fi
+		done
+		echo
 	        ./AddBiz "$bizName" "$contactName" "$bizAddress" "$contactNum" "$contactEmail"
 	        echo
 	        echo "New business - \"$bizName\" - added."
