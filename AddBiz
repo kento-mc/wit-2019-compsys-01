@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # Author: Kent Chadwick
 # Description: Adds new business records to the "BusinessDetails" file
 #
