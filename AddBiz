@@ -16,30 +16,95 @@ if [ $inputCount -gt 0 ]; then
 	        echo
 	        echo "Please enter the business name: "
 	        read bizName
+	        nameMenu=true
+	        while [ $nameMenu == true ]; do # while loop to control validation of input
+	                if [ -z "$bizName" ]; then # checks for empty string
+	                        echo
+	                        echo "No text entered. Please enter the business name again (0 to return to main menu): "
+	                        read bizName
+	                        if [ $bizName -eq 0 ] 2> /dev/null # checks for entry of 0
+	                        then 
+	                                nameMenu=false
+	                                ./Menu
+	                        fi
+	                else
+	                        nameMenu=false
+	                fi
+	        done
 	        echo
-	        echo "Please enter the contact person's first and last name: "
+	        echo "Please enter the contact person's name: "
 	        read contactName
+	        contactMenu=true
+	        while [ $contactMenu == true ]; do # while loop to control validation of input
+	                if [ -z "$contactName" ]; then # checks for empty string
+	                        echo
+	                        echo "No text entered. Please enter the contact's name again (0 to return to main menu): "
+	                        read contactName
+	                        if [ $contactName -eq 0 ] 2> /dev/null # checks for entry of 0
+	                        then 
+	                                contactMenu=false
+	                                ./Menu
+	                        fi
+	                else
+	                        contactMenu=false
+	                fi
+	        done
 	        echo
 	        echo "Please enter the business address: "
 	        read bizAddress
+	        addressMenu=true
+	        while [ $addressMenu == true ]; do # while loop to control validation of input
+	                if [ -z "$bizAddress" ]; then # checks for empty string
+	                        echo
+	                        echo "No text entered. Please enter the address again (0 to return to main menu): "
+	                        read bizAddress
+	                        if [ $bizAddress -eq 0 ] 2> /dev/null # checks for entry of 0
+	                        then
+	                                addressMenu=false
+	                                ./Menu
+	                        fi
+	                else
+	                        addressMenu=false
+	                fi
+	        done
 	        echo
 	        echo "Please enter the contact person's mobile number: "
 	        read contactNum
+	        numMenu=true
+	        while [ $numMenu == true ]; do # while loop to control validation of input
+	                if [ -z "$contactNum" ]; then # checks for empty string
+	                        echo
+	                        echo "No number entered. Please enter the contact number (0 to return to main menu): "
+	                        read contactNum
+	                        if [ $contactNum -eq 0 ] 2> /dev/null # checks for entry of 0
+	                        then
+	                                numMenu=false
+	                                ./Menu
+	                        fi
+	                else
+	                        numMenu=false
+	                fi
+	        done
 	        echo
 	        echo "Please enter contact person's email address: "
 	        read contactEmail
-		emailRegEx="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b"
-		emailMenu=true
-		while [ $emailMenu == true ]; do
-			if [[ $contactEmail =~ $emailRegEx ]]; then
-				emailMenu=false
-			else
-				echo
-				echo "Invalid email address entered. Please enter the email address again: "
-				read contactEmail
-			fi
-		done
-		echo
+	        emailRegEx="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b"
+	        emailMenu=true
+	        while [ $emailMenu == true ]; do
+	                if [[ $contactEmail =~ $emailRegEx ]]; then
+	                        emailMenu=false
+	                else
+	                        echo
+	                        echo "Invalid email address entered. Please enter the email address again (0 to return to main menu): "
+	                        read contactEmail
+	                        if [ $contactEmail -eq 0 ] 2> /dev/null # checks for entry of 0
+	                        then
+	                                numMenu=false
+	                                ./Menu
+	                        fi
+	                fi
+	        done
+	        echo
 	        ./AddBiz "$bizName" "$contactName" "$bizAddress" "$contactNum" "$contactEmail"
 	        echo
 	        echo "New business - \"$bizName\" - added."

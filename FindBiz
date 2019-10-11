@@ -10,7 +10,9 @@ if [ $inputCount -eq 0 ]
 then
 	echo
 	echo "Your search didn't match any records in our address book."
-	read -p "Would you like to perform another search? (y/n)" ans1
+	echo
+	echo "Would you like to perform another search? (y/n)"
+	read ans1
 	if [[ $ans1 == y* || $ans1 == Y* ]]
 	then
 		echo

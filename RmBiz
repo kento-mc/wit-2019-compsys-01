@@ -143,6 +143,7 @@ then
 else
 	echo
 	echo "Your search matched the following record."
+	echo
 	echo "Would you like to delete this Business?"
 	inputTerm=$(echo "$input" | sed -n 1p)
         singleResult=$(awk -v var="$inputTerm" '{if ($1 == var) print $0;}' BusinessDetails)
