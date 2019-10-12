@@ -82,7 +82,7 @@ then
 		elif [ $choice -eq $removeAll ] 2> /dev/null
 		then
 			echo
-			echo "Are you sure? (y/n)"
+			echo "Are you sure you want to remove these $inputCount records? (y/n)"
 			read sure
 			echo
                         if [[ $sure == y* || $sure == Y* ]]; then
@@ -141,7 +141,7 @@ then
 		then
 			subMenu=false
 			echo
-			echo "Are you sure you would like to delete the following Business?"
+			echo "Are you sure you want to delete the following business record?"
 			echo
 			if [ $choice -lt 10 ]; then
 				chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 8-)

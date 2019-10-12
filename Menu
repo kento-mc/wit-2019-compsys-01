@@ -206,7 +206,7 @@ case $option in
 
 			if [ $inputCount -gt 1 ]; then # if there are multiple matches
 				echo
-				echo "Your search returned multiple records."
+				echo "Your search returned $inputCount records."
 				echo
 				echo "Would you like to email one of these businesses?"
 		                echo "~~~~~~~~~~~~~~~~~~~~"
@@ -221,7 +221,10 @@ case $option in
 		                done
 		                echo "$menuLines" | column -t -s $'\t' -n # displays options w/ column layout
 		                echo "~~~~~~~~~~~~~~~~~~~~"
-		                mainMenOption=$(($inputCount + 1)) # Return to main menu value dynamically created
+				emailAll=$(($inputCount + 1))
+				echo "$emailAll) Email all of the above"
+				echo "~~~~~~~~~~~~~~~~~~~~"
+		                mainMenOption=$(($inputCount + 2)) # Return to main menu value dynamically created
 		                echo "$mainMenOption) Return to Main Menu"
 		                echo "~~~~~~~~~~~~~~~~~~~~"
 		                echo "0) Exit"
@@ -230,18 +233,78 @@ case $option in
 
 				if [ $choice -eq  $mainMenOption ] 2> /dev/null
 		                then
-		                        #subMenu=false
+		                        subMenu=false
 		                        ./Menu
 		                elif [ $choice -eq 0 ] 2> /dev/null
 		                then
-		                        #subMenu=false
+		                        subMenu=false
 		                        echo
 		                        echo "Goodbye!"
 		                        echo
 		                        exit 0
-		                elif [ $choice -lt $mainMenOption ] 2> /dev/null
-		                then
-		                        #subMenu=false
+				elif [ $choice -eq $emailAll ] 2> /dev/null
+				then
+					echo
+                                        echo "Please enter the email subject line: "
+                                        read subject
+                                        echo
+                                        echo "Please enter the email message: "
+                                        read message
+					echo
+					echo "Are you sure you want to send this message to these $inputCount contacts?"
+		                        echo
+		                        echo "SUBJECT: $subject"
+		                        echo "----------"
+		                        echo "MESSAGE: $message"
+					echo
+					read -p "(y/n): " sure
+					echo
+					if [[ $sure == y* || $sure == Y* ]]; then
+						count=1
+						while [ $count -le $inputCount ]; do
+							if [ $inputCount -lt 10 ]; then
+		                                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count")
+		                                        elif [ $inputCount -lt 100 ]; then
+		                                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count")
+		                                        else
+		                                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count")
+		                                        fi
+							emailAddress=$(echo "$chosenEntry" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b")
+	                                                echo "$message" | mail -s $subject $emailAddress 2> /dev/null
+	                                                ((count++))
+						done
+						echo
+						echo "Messase sent to $inputCount contacts."
+						echo
+						subMenu=false
+						./Menu
+					else
+						echo
+                                                echo "Would you like to perform another search? (y/n): "
+                                                read ans4
+                                                echo
+                                                if [[ $ans4 == y* || $ans4 == Y* ]]; then
+                                                        subMenu=true
+                                                else
+                                                        subMenu=false
+                                                        echo
+                                                        echo "Would you like to return to the main menu? (y/n): "
+                                                        read ans5
+                                                        echo
+                                                        if [[ $ans5 == y* || $ans5 == Y* ]]; then
+                                                                ./Menu
+                                                        else
+                                                                echo
+                                                                echo "Goodbye!"
+                                                                echo
+                                                                exit 0
+                                                        fi
+                                                fi
+                                        fi
+				elif [ $choice -lt $emailAll ] 2> /dev/null
+			        then
+				chosenToEmail=true
+				while [ $chosenToEmail == true ]; do
 		                        echo
 		                        echo "Is this the business you would like to email?"
 		                        echo
@@ -266,10 +329,22 @@ case $option in
 						echo
 						echo "Please enter the email message: "
 						read message
-						echo "$message" | mail -s $subject $emailAddress
 						echo
-						echo "Message sent to $emailAddress."
+						echo "Are you sure you want to send this message to $emailAddress?"
+	                                        echo
+	                                        echo "SUBJECT: $subject"
+	                                        echo "----------"
+	                                        echo "MESSAGE: $message"
+	                                        echo
+						read sure
+						if [[ $sure == y* || $sure == Y* ]]; then
+							echo "$message" | mail -s $subject $emailAddress
+							echo
+							echo "Message sent to $emailAddress."
 						echo
+						else
+							chosenToEmail=false
+						fi
 						subMenu=false
 	                        	else
 	                                	echo
@@ -294,13 +369,16 @@ case $option in
 							fi
 						fi
 					fi
+				done
 				else
 					echo
 		                        echo "Invalid input. Please enter a number between 0 & $mainMenuOption."
                 		        echo
 				fi
 			elif [ $inputCount -eq 1 ]; then
-	                        echo
+	                        chosenToEmail=true
+				while [ $chosenToEmail == true ]; do
+				echo
 				echo "Your search returned the following record."
 				echo
 				echo "Would you like to email this business?"
@@ -314,16 +392,28 @@ case $option in
 
                                 if [[ $sureEmail == y* || $sureEmail == Y* ]]; then
                                         emailAddress=$(echo "$matches" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b")
-                                        echo
-                                        echo "Please enter the email subject line: "
-                                        read subject
-                                        echo
-                                        echo "Please enter the email message: "
-                                        read message
-                                        echo "$message" | mail -s $subject $emailAddress
-                                        echo
-                                        echo "Message sent to $emailAddress."
-                                        echo
+                                          echo
+                                                echo "Please enter the email subject line: "
+                                                read subject
+                                                echo
+                                                echo "Please enter the email message: "
+                                                read message
+                                                echo
+                                                echo "Are you sure you want to send this message to $emailAddress?"
+                                                echo
+                                                echo "SUBJECT: $subject"
+                                                echo "----------"
+                                                echo "MESSAGE: $message"
+                                                echo
+                                                read -p "(y/n): " sure
+                                                if [[ $sure == y* || $sure == Y* ]]; then
+                                                        echo "$message" | mail -s $subject $emailAddress
+                                                        echo
+                                                        echo "Message sent to $emailAddress."
+                                                echo
+                                                else
+                                                        chosenToEmail=false
+                                                fi
                                         subMenu=false
 					./Menu
 				else
@@ -349,6 +439,7 @@ case $option in
                                                 fi
                                         fi
 				fi
+				done
 			else
                                 echo
 				echo "Your search didn't return any results."
@@ -404,6 +495,8 @@ case $option in
                         	echo
                         	menu=false
                         	./Menu
+			else
+				echo
 			fi
 			;;
 		3) 	menu=false
@@ -427,8 +520,7 @@ case $option in
 	echo
 	exit 0
 	;;
-*)	#
-	echo
+*)	echo
         echo "Invalid input. Please enter a number between 0 & 4."
 	./Menu
 	;;
