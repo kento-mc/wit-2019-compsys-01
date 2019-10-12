@@ -2,7 +2,6 @@
 # Author: Kent Chadwick
 # Description: Menu system to drive the business contact script
 #
-# command to select email address(es) from file: grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" BusinessDetails
 echo
 echo Welcome $USER
 echo "~~~~~~~~~~~~~~~~~~~~"
@@ -47,7 +46,7 @@ case $option in
                         echo "No text entered. Please enter the contact's name again (0 to return to main menu): "
                         read contactName
 			if [ $contactName -eq 0 ] 2> /dev/null # checks for entry of 0
-                        then 
+                        then
 				contactMenu=false
                                 ./Menu
                         fi
@@ -74,10 +73,11 @@ case $option in
                 fi
         done
 	echo
-	echo "Please enter the contact person's mobile number: "
+	echo "Please enter the contact person's phone number: "
 	read contactNum
         numMenu=true
-        while [ $numMenu == true ]; do # while loop to control validation of input
+	phoneRegEx="\b[0-9._+-]{3,16}\b" # regex for phone patterns
+	while [ $numMenu == true ]; do # while loop to control validation of input
                 if [ -z "$contactNum" ]; then # checks for empty string
                         echo
                         echo "No number entered. Please enter the contact number (0 to return to main menu): "
@@ -86,15 +86,22 @@ case $option in
                         then
                                 numMenu=false
                                 ./Menu
-                        fi
-                else
+			fi
+                elif [[ $contactNum =~ $phoneRegEx ]]; then # check for phone number format
                         numMenu=false
+		else
+	                echo
+                        echo "Invalid entry. Phone number must be between 3 and 15 characters,"
+                        echo "and contain only numbers or the following symbols: . _ - +"
+                        echo
+                        echo "Please enter the contact person's phone number: "
+                        read contactNum
                 fi
         done
 	echo
 	echo "Please enter contact person's email address: "
 	read contactEmail
-        emailRegEx="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b"
+        emailRegEx="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" # regex for email patterns
         emailMenu=true
         while [ $emailMenu == true ]; do
                 if [[ $contactEmail =~ $emailRegEx ]]; then

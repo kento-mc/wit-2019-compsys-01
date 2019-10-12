@@ -68,9 +68,10 @@ if [ $inputCount -gt 0 ]; then
 	                fi
 	        done
 	        echo
-	        echo "Please enter the contact person's mobile number: "
+	        echo "Please enter the contact person's phone number: "
 	        read contactNum
 	        numMenu=true
+	        phoneRegEx="\b[0-9._+-]{3,16}\b" # regex for phone patterns
 	        while [ $numMenu == true ]; do # while loop to control validation of input
 	                if [ -z "$contactNum" ]; then # checks for empty string
 	                        echo
@@ -81,8 +82,15 @@ if [ $inputCount -gt 0 ]; then
 	                                numMenu=false
 	                                ./Menu
 	                        fi
-	                else
+	                elif [[ $contactNum =~ $phoneRegEx ]]; then # check for phone number format
 	                        numMenu=false
+	                else
+	                        echo
+	                        echo "Invalid entry. Phone number must be between 3 and 15 characters,"
+	                        echo "and contain only numbers or the following symbols: . _ - +"
+	                        echo
+	                        echo "Please enter the contact person's phone number: "
+	                        read contactNum
 	                fi
 	        done
 	        echo
