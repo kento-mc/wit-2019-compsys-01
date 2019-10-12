@@ -41,7 +41,7 @@ then
 	fi
 elif [ $inputCount -gt 1 ]
 then
-	echo "Your search matched multiple records."
+	echo "Your search matched $inputCount records."
 	echo
 	subMenu=true
 	while [ "$subMenu" == true ]; do	# Menu will reload until user enters valid input
@@ -59,7 +59,10 @@ then
 		done
 		echo "$menuLines" | column -t -s $'\t' -n
 		echo "~~~~~~~~~~~~~~~~~~~~"
-		mainMenOption=$(($inputCount + 1))
+		removeAll=$(($inputCount + 1))
+		echo "$removeAll) Remove all of the above"
+		echo "~~~~~~~~~~~~~~~~~~~~"
+		mainMenOption=$(($inputCount + 2))
 		echo "$mainMenOption) Return to Main Menu"
 		echo "~~~~~~~~~~~~~~~~~~~~"
 		echo "0) Exit"
@@ -76,7 +79,65 @@ then
 			echo "Goodbye!"
 			echo
 			exit 0
-		elif [ $choice -lt $mainMenOption ] 2> /dev/null
+		elif [ $choice -eq $removeAll ] 2> /dev/null
+		then
+			echo
+			echo "Are you sure? (y/n)"
+			read sure
+			echo
+                        if [[ $sure == y* || $sure == Y* ]]; then
+				count=1
+				while [ $count -le $inputCount ]; do
+					if [ $inputCount -lt 10 ]; then
+	                	                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count" | cut -c 8-)
+	                	        elif [ $inputCount -lt 100 ]; then
+	                	                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count" | cut -c 9-)
+	                	        else
+	                	                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count" | cut -c 10-)
+	                	        fi
+					if [ $1 -eq 1 ]; then
+                                        	bizName=$(echo "$chosenEntry" | awk '{print $1}')
+                                        	toDelete=$(awk -v var="$bizName" '{if ($1 == var) print $0;}' BusinessDetails)
+                                	else
+                                        	contactName=$(echo "$chosenEntry" | awk '{print $2}')
+                                        	toDelete=$(awk -v var="$contactName" '{if ($1 == var) print $0;}' BusinessDetails)
+                                	fi
+                                	sed -i "/$toDelete/d" BusinessDetails
+					((count++))
+				done
+				echo
+				echo "$inputCount entries deleted."
+				echo
+				./Menu
+			else
+				echo
+                                echo "Would you like to perform another search? (y/n): "
+                                read ans4
+                                if [[ $ans4 == y* || $ans4 == Y* ]]; then
+                                        case $1 in
+                                        1)
+                                                echo
+                                                read -p "Please enter the Business name: " bizName
+                                                echo
+                                                ./RmBiz 1 $bizName
+                                                ;;
+                                        2)
+                                                echo
+                                                read -p "Please enter the Contact name: " contactName
+                                                echo
+                                                ./RmBiz 2 $contactName
+                                                ;;
+                                        esac
+                                else
+                                        subMenu=false
+                                        echo
+                                        echo "Good bye!"
+                                        echo
+                                        exit 0
+                                fi
+			fi
+			echo
+		elif [ $choice -lt $removeAll ] 2> /dev/null
 		then
 			subMenu=false
 			echo
@@ -108,7 +169,8 @@ then
 	                	echo
 			else
 				echo
-				read -p "Would you like to perform another search? (y/n): " ans4
+				echo "Would you like to perform another search? (y/n): "
+				read ans4
 	        		if [[ $ans4 == y* || $ans4 == Y* ]]; then
 	                		case $1 in
 	                		1)
