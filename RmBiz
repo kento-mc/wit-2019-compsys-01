@@ -16,19 +16,20 @@ inputCount=$(echo "$input" | grep -ci $2)
 if [ $inputCount -eq 0 ]
 then
 	echo "Your search didn't match any records in our address book."
-	read -p "Would you like to perform another search? (y/n)" ans1
+	echo "Would you like to perform another search? (y/n)"
+	read ans1
 	if [[ $ans1 == y* || $ans1 == Y* ]]
 	then
 		case $1 in
                 1)
                         echo
-                        read -p "Please enter the Business name: " bizName
+                        read -p "Please enter the business name: " bizName
                         echo
                         ./RmBiz 1 $bizName
                         ;;
                 2)
                         echo
-                        read -p "Please enter the Contact name: " contactName
+                        read -p "Please enter the contact name: " contactName
                         echo
 			./RmBiz 2 $contactName
                         ;;
@@ -57,7 +58,9 @@ then
 			selectFrom+="count$count $menuLine$newL"
 			((count++))
 		done
-		echo "$menuLines" | column -t -s $'\t' -n
+		resultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
+                resultMenu+="$menuLines"
+                echo "$resultMenu" | column -t -s $'\t' -n # displays options w/ column layout
 		echo "~~~~~~~~~~~~~~~~~~~~"
 		removeAll=$(($inputCount + 1))
 		echo "$removeAll) Remove all of the above"
@@ -86,14 +89,18 @@ then
 			read sure
 			echo
                         if [[ $sure == y* || $sure == Y* ]]; then
+				resultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
 				count=1
 				while [ $count -le $inputCount ]; do
 					if [ $inputCount -lt 10 ]; then
 	                	                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count" | cut -c 8-)
+						resutMenu+="$chosenEntry"
 	                	        elif [ $inputCount -lt 100 ]; then
 	                	                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count" | cut -c 9-)
+						resutMenu+="$chosenEntry" 
 	                	        else
 	                	                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count" | cut -c 10-)
+						resutMenu+="$chosenEntry" 
 	                	        fi
 					if [ $1 -eq 1 ]; then
                                         	bizName=$(echo "$chosenEntry" | awk '{print $1}')
@@ -143,15 +150,19 @@ then
 			echo
 			echo "Are you sure you want to delete the following business record?"
 			echo
+			resultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
 			if [ $choice -lt 10 ]; then
-				chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 8-)
-				echo "$choice) $chosenEntry"
+				chosenEntry=$(echo "$selectFrom" | grep "count$choice" | cut -c 8-)
+				resultMenu+="$chosenEntry"
+				echo "$resultMenu" | column -t -s $'\t' -n
 			elif [ $choice -lt 100 ]; then
-				chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 9-)
-				echo "$choice) $chosenEntry"
+				chosenEntry=$(echo "$selectFrom" | grep "count$choice" | cut -c 9-)
+				resultMenu+="$chosenEntry"
+                                echo "$resultMenu" | column -t -s $'\t' -n
 			else
-				chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 10-)
-				echo "$choice) $chosenEntry"
+				chosenEntry=$(echo "$selectFrom" | grep "count$choice" | cut -c 10-)
+				resultMenu+="$chosenEntry"
+                                echo "$resultMenu" | column -t -s $'\t' -n
 			fi
 			echo
 			read -p "(y/n): " sureDelete
@@ -175,13 +186,13 @@ then
 	                		case $1 in
 	                		1)
 	                        		echo
-	                        		read -p "Please enter the Business name: " bizName
+	                        		read -p "Please enter the business name: " bizName
 	                        		echo
 	                        		./RmBiz 1 $bizName
 	                        		;;
 	                		2)
 	                        		echo
-	                        		read -p "Please enter the Contact name: " contactName
+	                        		read -p "Please enter the contact name: " contactName
 	                        		echo
 	                        		./RmBiz 2 $contactName
 	        	        		;;
@@ -207,10 +218,12 @@ else
 	echo "Your search matched the following record."
 	echo
 	echo "Would you like to delete this Business?"
+	echo
 	inputTerm=$(echo "$input" | sed -n 1p)
         singleResult=$(awk -v var="$inputTerm" '{if ($1 == var) print $0;}' BusinessDetails)
-	echo
-	echo $singleResult
+	singleResultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
+        singleResultMenu+="$singleResult"
+        echo "$singleResultMenu" | column -t -s $'\t' -n
 	echo
 	read -p "(y/n): " ans2
 	if [[ $ans2 == y* || $ans2 == Y* ]]
@@ -221,18 +234,19 @@ else
 		echo
 		./Menu
 	else
-		read -p "Would you like to perform another search? (y/n): " ans3
+		echo "Would you like to perform another search? (y/n): "
+		read ans3
 	        if [[ $ans3 == y* || $ans3 == Y* ]]; then
                 	case $1 in
                 	1)
                         	echo
-	                        read -p "Please enter the Business name: " bizName
-		                 echo
+	                        read -p "Please enter the business name: " bizName
+		                echo
                 	        ./RmBiz 1 $bizName
                         	;;
                 	2)
                         	echo
-                        	read -p "Please enter the Contact name: " contactName
+                        	read -p "Please enter the contact name: " contactName
                         	echo
                         	./RmBiz 2 $contactName
                         	;;

@@ -25,13 +25,8 @@ case $option in
 	while [ $nameMenu == true ]; do # while loop to control validation of input
 		if [ -z "$bizName" ]; then # checks for empty string
 			echo
-                        echo "No text entered. Please enter the business name again (0 to return to main menu): "
+                        echo "No text entered. Please enter the business name again: "
                         read bizName
-			if [ $bizName -eq 0 ] 2> /dev/null # checks for entry of 0
-                        then 
-                                nameMenu=false
-                                ./Menu
-                        fi
 		else
 			nameMenu=false
 		fi
@@ -43,13 +38,8 @@ case $option in
         while [ $contactMenu == true ]; do # while loop to control validation of input
                 if [ -z "$contactName" ]; then # checks for empty string
                         echo
-                        echo "No text entered. Please enter the contact's name again (0 to return to main menu): "
+                        echo "No text entered. Please enter the contact's name again: "
                         read contactName
-			if [ $contactName -eq 0 ] 2> /dev/null # checks for entry of 0
-                        then
-				contactMenu=false
-                                ./Menu
-                        fi
                 else
                         contactMenu=false
                 fi
@@ -61,13 +51,9 @@ case $option in
         while [ $addressMenu == true ]; do # while loop to control validation of input
                 if [ -z "$bizAddress" ]; then # checks for empty string
                         echo
-                        echo "No text entered. Please enter the address again (0 to return to main menu): "
+                        echo "No text entered. Please enter the address again: "
                         read bizAddress
-			if [ $bizAddress -eq 0 ] 2> /dev/null # checks for entry of 0
-			then
-				addressMenu=false
-				./Menu
-			fi
+
                 else
                         addressMenu=false
                 fi
@@ -80,13 +66,8 @@ case $option in
 	while [ $numMenu == true ]; do # while loop to control validation of input
                 if [ -z "$contactNum" ]; then # checks for empty string
                         echo
-                        echo "No number entered. Please enter the contact number (0 to return to main menu): "
+                        echo "No number entered. Please enter the contact number: "
                         read contactNum
-                        if [ $contactNum -eq 0 ] 2> /dev/null # checks for entry of 0
-                        then
-                                numMenu=false
-                                ./Menu
-			fi
                 elif [[ $contactNum =~ $phoneRegEx ]]; then # check for phone number format
                         numMenu=false
 		else
@@ -108,13 +89,8 @@ case $option in
                         emailMenu=false
                 else
                         echo
-                        echo "Invalid email address entered. Please enter the email address again (0 to return to main menu): "
+                        echo "Invalid email address entered. Please enter the email address again: "
                         read contactEmail
-			if [ $contactEmail -eq 0 ] 2> /dev/null # checks for entry of 0
-                        then
-                                numMenu=false
-                                ./Menu
-                        fi
                 fi
         done
 	echo
@@ -219,7 +195,9 @@ case $option in
 		                        selectFrom+="count$count $menuLine$newL" # creates separate list with "count" term at start to make selection of the correct line more robust
 		                        ((count++)) # increments count variable
 		                done
-		                echo "$menuLines" | column -t -s $'\t' -n # displays options w/ column layout
+		                resultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
+                                resultMenu+="$menuLines"
+				echo "$resultMenu" | column -t -s $'\t' -n # displays options w/ column layout
 		                echo "~~~~~~~~~~~~~~~~~~~~"
 				emailAll=$(($inputCount + 1))
 				echo "$emailAll) Email all of the above"
@@ -285,6 +263,9 @@ case $option in
                                                 echo
                                                 if [[ $ans4 == y* || $ans4 == Y* ]]; then
                                                         subMenu=true
+							menuLines=""
+							selectFrom=""
+							resultMenu=""
                                                 else
                                                         subMenu=false
                                                         echo
@@ -308,15 +289,19 @@ case $option in
 		                        echo
 		                        echo "Is this the business you would like to email?"
 		                        echo
+					resultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
 		                        if [ $choice -lt 10 ]; then
-		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 8-)
-		                                echo "$choice) $chosenEntry"
+		                                chosenEntry=$(echo "$selectFrom" | grep "count$choice" | cut -c 8-)
+		                                resultMenu+="$chosenEntry"
+						echo "$resultMenu" | column -t -s $'\t' -n
 		                        elif [ $choice -lt 100 ]; then
-		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 9-)
-		                                echo "$choice) $chosenEntry"
+		                                chosenEntry=$(echo "$selectFrom" | grep "count$choice" | cut -c 9-)
+		                                resultMenu+="$chosenEntry"
+                                                echo "$resultMenu" | column -t -s $'\t' -n
 		                        else
-		                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$choice" | cut -c 10-)
-		                                echo "$choice) $chosenEntry"
+		                                chosenEntry=$(echo "$selectFrom" | grep "count$choice" | cut -c 10-)
+		                                resultMenu+="$chosenEntry"
+                                                echo "$resultMenu" | column -t -s $'\t' -n
 		                        fi
 					echo
 					read -p "(y/n): " sureEmail
@@ -336,14 +321,21 @@ case $option in
 	                                        echo "----------"
 	                                        echo "MESSAGE: $message"
 	                                        echo
-						read sure
+						read -p "(y/n): " sure
 						if [[ $sure == y* || $sure == Y* ]]; then
 							echo "$message" | mail -s $subject $emailAddress
 							echo
 							echo "Message sent to $emailAddress."
-						echo
+							echo
+							menu=false
+							subMenu=false
+							chosenToEmail=false
+							./Menu
 						else
 							chosenToEmail=false
+							menuLines=""
+                                                        selectFrom=""
+                                                        resultMenu=""
 						fi
 						subMenu=false
 	                        	else
@@ -352,16 +344,22 @@ case $option in
 						read ans4
 	                                	echo
 						if [[ $ans4 == y* || $ans4 == Y* ]]; then
-							subMenu=true
+							chosenToEmail=false
+							menuLines=""
+							selectFrom=""
+							resultMenu=""
 						else
 							subMenu=false
+							chosenToEmail=false
 							echo
 							echo "Would you like to return to the main menu? (y/n): "
 							read ans5
 							echo
 							if [[ $ans5 == y* || $ans5 == Y* ]]; then
+								menu=false
 								./Menu
 							else
+								menu=false
 								echo
 								echo "Goodbye!"
 								echo
@@ -375,6 +373,7 @@ case $option in
 		                        echo "Invalid input. Please enter a number between 0 & $mainMenuOption."
                 		        echo
 				fi
+			# when the search only returns one result
 			elif [ $inputCount -eq 1 ]; then
 	                        chosenToEmail=true
 				while [ $chosenToEmail == true ]; do
@@ -410,11 +409,16 @@ case $option in
                                                         echo "$message" | mail -s $subject $emailAddress
                                                         echo
                                                         echo "Message sent to $emailAddress."
-                                                echo
+                                                	echo
+							menu=false
+							subMenu=false
+							chosenToEmail=false
+							./Menu
                                                 else
                                                         chosenToEmail=false
                                                 fi
-                                        subMenu=false
+                                        menu=false
+					subMenu=false
 					./Menu
 				else
 					echo
@@ -423,15 +427,19 @@ case $option in
                                         echo
                                         if [[ $ans4 == y* || $ans4 == Y* ]]; then
                                                 subMenu=true
+						chosenToEmail=false
                                         else
                                                 subMenu=false
+						chosenToEmail=false
                                                 echo
                                                 echo "Would you like to return to the main menu? (y/n): "
                                                 read ans5
                                                 echo
                                                 if [[ $ans5 == y* || $ans5 == Y* ]]; then
-                                                        ./Menu
+                                                        menu=false
+							./Menu
                                                 else
+							menu=false
                                                         echo
                                                         echo "Goodbye!"
                                                         echo
@@ -456,8 +464,10 @@ case $option in
 	                                read ans5
         	                        echo
                 	                if [[ $ans5 == y* || $ans5 == Y* ]]; then
-                        	                ./Menu
+                        	                menu=false
+						./Menu
                                 	else
+						menu=false
                                         	echo
 	                                        echo "Goodbye!"
         	                                echo
@@ -496,7 +506,21 @@ case $option in
                         	menu=false
                         	./Menu
 			else
-				echo
+				subMenu=false
+                                echo
+                                echo "Would you like to return to the main menu? (y/n): "
+                                read ans5
+                                echo
+                                if [[ $ans5 == y* || $ans5 == Y* ]]; then
+                                        menu=false
+                                        ./Menu
+                                else
+                                        menu=false
+                                        echo
+                                        echo "Goodbye!"
+                                        echo
+                                        exit 0
+                                fi
 			fi
 			;;
 		3) 	menu=false
@@ -515,17 +539,24 @@ case $option in
 		esac
 	done
 	;;
-0)	echo
+0)	addMenu=false
+	nameMenu=false
+	contactMenu=false
+	addressMenu=false
+	numMenu=false
+	emailMenu=false
+	menu=false
+	echo
 	echo "Goodbye!"
 	echo
+	exit 0
 	exit 0
 	;;
 *)	echo
         echo "Invalid input. Please enter a number between 0 & 4."
+	echo
 	./Menu
 	;;
 esac
 
 exit 0
-
-

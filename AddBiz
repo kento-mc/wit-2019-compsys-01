@@ -23,7 +23,7 @@ if [ $inputCount -gt 0 ]; then
 	                        echo "No text entered. Please enter the business name again (0 to return to main menu): "
 	                        read bizName
 	                        if [ $bizName -eq 0 ] 2> /dev/null # checks for entry of 0
-	                        then 
+	                        then
 	                                nameMenu=false
 	                                ./Menu
 	                        fi
