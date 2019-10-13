@@ -81,13 +81,15 @@ then
 			if [ $choice -lt 10 ]; then
 				singleResult=$(echo "$selectFrom" | grep "count$choice" | cut -c 8-)
 				singleResultMenu+="$singleResult"
-				echo "$singleResultMenu" | column -t -s $'\t' -n 
+				echo "$singleResultMenu" | column -t -s $'\t' -n
 			elif [ $choice -lt 100 ]; then
 				singleResult=$(echo "$selectFrom" | grep "count$choice" | cut -c 9-)
-				echo $singleResult
+				singleResultMenu+="$singleResult"
+                                echo "$singleResultMenu" | column -t -s $'\t' -n 
 			else
 				singleResult=$(echo "$selectFrom" | grep "count$choice" | cut -c 10-)
-				echo $singleResult
+				singleResultMenu+="$singleResult"
+                                echo "$singleResultMenu" | column -t -s $'\t' -n 
 			fi
 			echo
 			echo "~~~~~~~~~~~~~~~~~~~~"
@@ -186,16 +188,24 @@ then
 				4)	echo
                                         echo "Please enter the new phone number: "
 					read newPhoneNo
-                    			updateMenu=true
-                                        while [ $updateMenu == true ]; do # loop to validate entry
-                                                if [ -z "$newPhoneNo" ]; then # checks for empty string
-                                                        echo
-                                                        echo "No text entered. Please enter the new phone number: "
-                                                        read newPhoneNo
-                                                else
-                                                        updateMenu=false
-                                                fi
-                                        done
+					phoneRegEx="\b[0-9._+-]{3,16}\b" # regex for phone patterns
+       					updateMenu=true
+					while [ $updateMenu == true ]; do # while loop to control validation of input
+                				if [ -z "$newPhoneNo" ]; then # checks for empty string
+                        				echo
+                        				echo "No number entered. Please enter the contact number: "
+                        				read newPhoneNo
+                				elif [[ $newPhoneNo =~ $phoneRegEx ]]; then # check for phone number format
+                        				updateMenu=false
+	                			else
+        				                echo
+				                        echo "Invalid entry. Phone number must be between 3 and 15 characters,"
+				                        echo "and contain only numbers or the following symbols: . _ - +"
+				                        echo
+				                        echo "Please enter the contact person's phone number: "
+				                        read newPhoneNo
+				                fi
+        				done
 		                        toReplace=$(echo "$singleResult" | awk -F "\t" '{print $4}')
                                         firstResult="$singleResult"
                                         updatedResult=${singleResult/$toReplace/$newPhoneNo}
@@ -207,14 +217,21 @@ then
 				5)	echo
                                         echo "Please enter the new email address: "
 					read newEmail
+					emailRegEx="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" # regex for email patterns
 					updateMenu=true
                                         while [ $updateMenu == true ]; do # loop to validate entry
                                                 if [ -z "$newEmail" ]; then # checks for empty string
                                                         echo
                                                         echo "No text entered. Please enter the new email address: "
                                                         read newEmail
-                                                else
-                                                        updateMenu=false
+						else
+							if [[ $newEmail =~ $emailRegEx ]]; then
+                	        				updateMenu=false
+        	        				else
+                        					echo
+                        					echo "Invalid email address entered. Please enter the email address again: "
+                        					read newEmail
+                					fi
                                                 fi
                                         done
                                         toReplace=$(echo "$singleResult" | awk -F "\t" '{print $5}')

@@ -2,17 +2,30 @@
 # Author: Kent Chadwick
 # Description: Adds new business records to the "BusinessDetails" file
 #
+# read in arguments as tab separated substrings. the tabs will allow for delimiting the entries.
 newBiz="$1	$2	$3	$4	$5"
 
-# Count the number of records that match the user's search input, and store the value in $inputCount
-inputCount=$(grep -ci "$newBiz" BusinessDetails)
+entryMatchCount=$(grep -ci "$newBiz" BusinessDetails) # count exact matches
+entryMatch=$(grep -i "$newBiz" BusinessDetails) # store exact match in variable
+#bizNameMatch=$(awk -F "\t" '{print $1}' BusinessDetails | grep -i $1)
+#bizMatch=$(awgrep -i "$1" BusinessDetails) # bizName match record
+#bizMatchCount=$(awk -F "\t" '{print $1}' BusinessDetails | grep -ci "$1") # count bizName matches
+bizMatch=$(awk -v var="$1" '{if ($1 == var) print $0;}' BusinessDetails)
+bizMatchCount=$(grep -ci "$bizMatch" BusinessDetails)
 
-if [ $inputCount -gt 0 ]; then
+if [ $entryMatchCount -gt 0 ]; then
 	echo
 	echo "An identical record already exists!"
-	read -p "Would you like to attempt adding a new business again? (y/n): " ans
+	echo
+	# display header
+	resultDisplay=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
+        resultDisplay+="$entryMatch"
+	echo "$resultDisplay" | column -t -s $'\t' -n # displays result w/ column layout
+	echo
+	echo "Would you like to attempt adding a new business again? (y/n): "
+	read ans
         if [[ $ans == y* || $ans == Y* ]]; then
-		 # Read in uper input for Business details and pass the variables to the AddBiz script as arguments
+		# read in user input for susiness details and pass the variables to the AddBiz script as arguments
 	        echo
 	        echo "Please enter the business name: "
 	        read bizName
@@ -41,7 +54,7 @@ if [ $inputCount -gt 0 ]; then
 	                        echo "No text entered. Please enter the contact's name again (0 to return to main menu): "
 	                        read contactName
 	                        if [ $contactName -eq 0 ] 2> /dev/null # checks for entry of 0
-	                        then 
+	                        then
 	                                contactMenu=false
 	                                ./Menu
 	                        fi
@@ -115,12 +128,44 @@ if [ $inputCount -gt 0 ]; then
 	        echo
 	        ./AddBiz "$bizName" "$contactName" "$bizAddress" "$contactNum" "$contactEmail"
 	        echo
-	        echo "New business - \"$bizName\" - added."
-	        echo
-
 	else
-		./Menu
+		echo # no exits script and returns to main menu
 	fi
+elif [ $bizMatchCount -gt 0 ]; then
+        echo
+        echo "An identical business name was found in our records!"
+        echo
+        # display header
+        resultDisplay=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
+        resultDisplay+="$bizMatch"
+        echo "$resultDisplay" | column -t -s $'\t' -n # displays result w/ column layout
+        echo
+        echo "Would you like to overwrite the previous entry? (y/n): "
+        read overwrite
+        if [[ $overwrite == y* || $overwrite == Y* ]]; then
+                firstResult="$bizMatch"
+                updatedResult="$newBiz"
+                sed -i "s/${firstResult}/${updatedResult}/" BusinessDetails
+                echo
+                echo "Entry updated:"
+                echo
+                #display header
+                resultDisplay=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
+                resultDisplay+="$newBiz"
+                echo "$resultDisplay" | column -t -s $'\t' -n # displays result w/ column layout
+                echo
+                ./Menu
+	else
+		echo
+		echo "Press any key to return to main menu."
+		read any
+		echo
+        fi
 else
 	echo "$newBiz" >> BusinessDetails
+	echo
+        echo "New Business - \"$1\" - added."
+        echo
 fi
+
+exit 0

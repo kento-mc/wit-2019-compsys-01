@@ -17,7 +17,7 @@ echo "~~~~~~~~~~~~~~~~~~~~"
 read -p "Menu choice: " option
 
 case $option in
-1)	# Read in user input for Business details and pass the variables to the AddBiz script as arguments
+1)	# Read in user input for business details and pass the variables to the AddBiz script as arguments
 	echo
 	echo "Please enter the business name: "
 	read bizName
@@ -28,7 +28,7 @@ case $option in
                         echo "No text entered. Please enter the business name again: "
                         read bizName
 		else
-			nameMenu=false
+			nameMenu=false # break the loop, as input is valid
 		fi
 	done
 	echo
@@ -41,7 +41,7 @@ case $option in
                         echo "No text entered. Please enter the contact's name again: "
                         read contactName
                 else
-                        contactMenu=false
+                        contactMenu=false # break the loop, as input is valid
                 fi
         done
 	echo
@@ -55,7 +55,8 @@ case $option in
                         read bizAddress
 
                 else
-                        addressMenu=false
+                        addressMenu=false # break the loop, as input is valid
+
                 fi
         done
 	echo
@@ -69,7 +70,7 @@ case $option in
                         echo "No number entered. Please enter the contact number: "
                         read contactNum
                 elif [[ $contactNum =~ $phoneRegEx ]]; then # check for phone number format
-                        numMenu=false
+                        numMenu=false # break the loop, as input is valid
 		else
 	                echo
                         echo "Invalid entry. Phone number must be between 3 and 15 characters,"
@@ -86,7 +87,7 @@ case $option in
         emailMenu=true
         while [ $emailMenu == true ]; do
                 if [[ $contactEmail =~ $emailRegEx ]]; then
-                        emailMenu=false
+                        emailMenu=false # break the loop, as input is valid
                 else
                         echo
                         echo "Invalid email address entered. Please enter the email address again: "
@@ -94,9 +95,8 @@ case $option in
                 fi
         done
 	echo
+	# pass the variables to the AddBiz script as arguments
 	./AddBiz "$bizName" "$contactName" "$bizAddress" "$contactNum" "$contactEmail"
-	echo
-	echo "New Business - \"$bizName\" - added."
 	echo
 	./Menu
 	;;
@@ -120,12 +120,14 @@ case $option in
 
 		case $option2 in
 		1)	echo
-			read -p "Please enter the Business name: " bizName
+			echo "Please enter the Business name: "
+			read bizName
 			echo
 			./RmBiz 1 $bizName
 			;;
 		2)	echo
-			read -p "Please enter the Contact name: " contactName
+			echo "Please enter the Contact name: "
+			read contactName
 			echo
 			./RmBiz 2 $contactName
 			;;
@@ -156,7 +158,7 @@ case $option in
                         echo "No text entered. Please enter something to search for: "
                         read find
                 else
-                        findMenu=false
+                        findMenu=false # break the loop, as input is valid
                 fi
 	done
 	./FindBiz $find
@@ -182,13 +184,12 @@ case $option in
 	        case $option3 in
 
 		1)	subMenu=true
-			while [ $subMenu == true ]; do
+			while [ $subMenu == true ]; do # loop to control the search results menu
 			echo
-			#read in search term
-			echo "Please enter the business name, contact name, email address, etc: "
+			echo "Please enter the business name, contact name, email address, etc: " # read in search term(s)
 			read search
-			matches=$(grep -i "$search" BusinessDetails) # returns entrys with a matching string
-			inputCount=$(echo "$matches" | grep -ci "$search") #count results from grep and store in variable
+			matches=$(grep -i "$search" BusinessDetails) # returns records with a matching string
+			inputCount=$(echo "$matches" | grep -ci "$search") # count results from grep and store in variable
 
 			if [ $inputCount -gt 1 ]; then # if there are multiple matches
 				echo
@@ -205,6 +206,7 @@ case $option in
 		                        selectFrom+="count$count $menuLine$newL" # creates separate list with "count" term at start to make selection of the correct line more robust
 		                        ((count++)) # increments count variable
 		                done
+				# create heading for menu
 		                resultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
                                 resultMenu+="$menuLines"
 				echo "$resultMenu" | column -t -s $'\t' -n # displays options w/ column layout
@@ -219,18 +221,18 @@ case $option in
 		                echo "~~~~~~~~~~~~~~~~~~~~"
 		                read -p "Menu choice: " choice
 
-				if [ $choice -eq  $mainMenOption ] 2> /dev/null
+				if [ $choice -eq  $mainMenOption ] 2> /dev/null # return to main menu
 		                then
 		                        subMenu=false
 		                        ./Menu
-		                elif [ $choice -eq 0 ] 2> /dev/null
+		                elif [ $choice -eq 0 ] 2> /dev/null # exit
 		                then
 		                        subMenu=false
 		                        echo
 		                        echo "Goodbye!"
 		                        echo
 		                        exit 0
-				elif [ $choice -eq $emailAll ] 2> /dev/null
+				elif [ $choice -eq $emailAll ] 2> /dev/null # email all records returned from search
 				then
 					echo
                                         echo "Please enter the email subject line: "
@@ -249,14 +251,16 @@ case $option in
 					echo
 					if [[ $sure == y* || $sure == Y* ]]; then
 						count=1
+						# loop to read in each line from search results and send that contact an email
 						while [ $count -le $inputCount ]; do
-							if [ $inputCount -lt 10 ]; then
+							if [ $inputCount -lt 10 ]; then # accounting for possible different lengths of the prefix which needs to be cut from the string
 		                                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count")
 		                                        elif [ $inputCount -lt 100 ]; then
 		                                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count")
 		                                        else
 		                                                chosenEntry=$(echo "$selectFrom" | column -t -s $'\t' -n | grep "count$count")
 		                                        fi
+							# retrieve the email address from the entry
 							emailAddress=$(echo "$chosenEntry" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b")
 	                                                echo "$message" | mail -s $subject $emailAddress 2> /dev/null
 	                                                ((count++))
@@ -273,6 +277,7 @@ case $option in
                                                 echo
                                                 if [[ $ans4 == y* || $ans4 == Y* ]]; then
                                                         subMenu=true
+							# previous results are cleared to allow ner search
 							menuLines=""
 							selectFrom=""
 							resultMenu=""
@@ -292,18 +297,19 @@ case $option in
                                                         fi
                                                 fi
                                         fi
-				elif [ $choice -lt $emailAll ] 2> /dev/null
+				elif [ $choice -lt $emailAll ] 2> /dev/null # if there is a single entry selected from the results
 			        then
 				chosenToEmail=true
 				while [ $chosenToEmail == true ]; do
 		                        echo
 		                        echo "Is this the business you would like to email?"
 		                        echo
+					# create header for result display
 					resultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
-		                        if [ $choice -lt 10 ]; then
+		                        if [ $choice -lt 10 ]; then # account for prefix length to be cut
 		                                chosenEntry=$(echo "$selectFrom" | grep "count$choice" | cut -c 8-)
 		                                resultMenu+="$chosenEntry"
-						echo "$resultMenu" | column -t -s $'\t' -n
+						echo "$resultMenu" | column -t -s $'\t' -n # display column layout
 		                        elif [ $choice -lt 100 ]; then
 		                                chosenEntry=$(echo "$selectFrom" | grep "count$choice" | cut -c 9-)
 		                                resultMenu+="$chosenEntry"
@@ -317,6 +323,7 @@ case $option in
 					read -p "(y/n): " sureEmail
 
 					if [[ $sureEmail == y* || $sureEmail == Y* ]]; then
+						#retrieve email from the entry
 						emailAddress=$(echo "$chosenEntry" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b")
 						echo
 						echo "Please enter the email subject line: "
@@ -383,8 +390,7 @@ case $option in
 		                        echo "Invalid input. Please enter a number between 0 & $mainMenuOption."
                 		        echo
 				fi
-			# when the search only returns one result
-			elif [ $inputCount -eq 1 ]; then
+			elif [ $inputCount -eq 1 ]; then # when the search only returns one result
 	                        chosenToEmail=true
 				while [ $chosenToEmail == true ]; do
 				echo
@@ -393,15 +399,17 @@ case $option in
 				echo "Would you like to email this business?"
 				echo "~~~~~~~~~~~~~~~~~~~~"
 	                        echo
+				# header for results display
 	                        singleResultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t---------\t----------\t----------\t----------\n'
-	                        singleResultMenu+="$matches"
-	                        echo "$singleResultMenu" | column -t -s $'\t' -n
+	                        singleResultMenu+="$matches" # add results to display
+	                        echo "$singleResultMenu" | column -t -s $'\t' -n # display in column format
 				echo
                                 read -p "(y/n): " sureEmail
 
                                 if [[ $sureEmail == y* || $sureEmail == Y* ]]; then
-                                        emailAddress=$(echo "$matches" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b")
-                                          echo
+                                        	# retrieve email from entry
+						emailAddress=$(echo "$matches" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b")
+                                          	echo
                                                 echo "Please enter the email subject line: "
                                                 read subject
                                                 echo
@@ -416,7 +424,7 @@ case $option in
                                                 echo
                                                 read -p "(y/n): " sure
                                                 if [[ $sure == y* || $sure == Y* ]]; then
-                                                        echo "$message" | mail -s $subject $emailAddress
+                                                        echo "$message" | mail -s $subject $emailAddress # send the email
                                                         echo
                                                         echo "Message sent to $emailAddress."
                                                 	echo
@@ -488,7 +496,8 @@ case $option in
 			fi
 			done
 			;;
-		2)	echo
+		2)	# emailing the whole address book
+			echo
 			echo "Please enter the email subject line: "
                         read subject
                         echo
@@ -505,7 +514,7 @@ case $option in
 			if [[ $sureEmail == y* || $sureEmail == Y* ]]; then
 				bizNum=$(wc -l < BusinessDetails)
 				count=1
-				while [ $count -le $bizNum ]; do
+				while [ $count -le $bizNum ]; do # loop to retrieve indivisual email asddresses and send the email to each one.
 					emailAddress=$(sed -n "${count}p" BusinessDetails | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b")
 					echo "$message" | mail -s $subject $emailAddress 2> /dev/null # dumps errors for invalid email addresses
 					((count++))
