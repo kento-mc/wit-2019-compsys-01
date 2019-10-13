@@ -120,13 +120,13 @@ case $option in
 
 		case $option2 in
 		1)	echo
-			echo "Please enter the Business name: "
+			echo "Please enter the business name: "
 			read bizName
 			echo
 			./RmBiz 1 $bizName
 			;;
 		2)	echo
-			echo "Please enter the Contact name: "
+			echo "Please enter the contact name: "
 			read contactName
 			echo
 			./RmBiz 2 $contactName
@@ -568,7 +568,6 @@ case $option in
 	echo
 	echo "Goodbye!"
 	echo
-	exit 0
 	exit 0
 	;;
 *)	echo

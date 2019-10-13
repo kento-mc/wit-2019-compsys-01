@@ -7,11 +7,13 @@ newBiz="$1	$2	$3	$4	$5"
 
 entryMatchCount=$(grep -ci "$newBiz" BusinessDetails) # count exact matches
 entryMatch=$(grep -i "$newBiz" BusinessDetails) # store exact match in variable
-#bizNameMatch=$(awk -F "\t" '{print $1}' BusinessDetails | grep -i $1)
-#bizMatch=$(awgrep -i "$1" BusinessDetails) # bizName match record
-#bizMatchCount=$(awk -F "\t" '{print $1}' BusinessDetails | grep -ci "$1") # count bizName matches
-bizMatch=$(awk -v var="$1" '{if ($1 == var) print $0;}' BusinessDetails)
-bizMatchCount=$(grep -ci "$bizMatch" BusinessDetails)
+# use $1 variable as an awk variable to test match of particular column, and then print the whole line
+bizMatch=$(awk -F "\t" -v var="$1" '{if ($1 == var) print $0;}' BusinessDetails) # store record with bizName match
+if [ -z "$bizMatch" ]; then # if bizMatch is an empty string, set bizMatchCount to 0
+	bizMatchCount=0
+else
+	bizMatchCount=$(grep -ci "$bizMatch" BusinessDetails)
+fi
 
 if [ $entryMatchCount -gt 0 ]; then
 	echo
@@ -33,13 +35,8 @@ if [ $entryMatchCount -gt 0 ]; then
 	        while [ $nameMenu == true ]; do # while loop to control validation of input
 	                if [ -z "$bizName" ]; then # checks for empty string
 	                        echo
-	                        echo "No text entered. Please enter the business name again (0 to return to main menu): "
+	                        echo "No text entered. Please enter the business name again: "
 	                        read bizName
-	                        if [ $bizName -eq 0 ] 2> /dev/null # checks for entry of 0
-	                        then
-	                                nameMenu=false
-	                                ./Menu
-	                        fi
 	                else
 	                        nameMenu=false
 	                fi
@@ -51,13 +48,8 @@ if [ $entryMatchCount -gt 0 ]; then
 	        while [ $contactMenu == true ]; do # while loop to control validation of input
 	                if [ -z "$contactName" ]; then # checks for empty string
 	                        echo
-	                        echo "No text entered. Please enter the contact's name again (0 to return to main menu): "
+	                        echo "No text entered. Please enter the contact's name again: "
 	                        read contactName
-	                        if [ $contactName -eq 0 ] 2> /dev/null # checks for entry of 0
-	                        then
-	                                contactMenu=false
-	                                ./Menu
-	                        fi
 	                else
 	                        contactMenu=false
 	                fi
@@ -69,13 +61,8 @@ if [ $entryMatchCount -gt 0 ]; then
 	        while [ $addressMenu == true ]; do # while loop to control validation of input
 	                if [ -z "$bizAddress" ]; then # checks for empty string
 	                        echo
-	                        echo "No text entered. Please enter the address again (0 to return to main menu): "
+	                        echo "No text entered. Please enter the address again: "
 	                        read bizAddress
-	                        if [ $bizAddress -eq 0 ] 2> /dev/null # checks for entry of 0
-	                        then
-	                                addressMenu=false
-	                                ./Menu
-	                        fi
 	                else
 	                        addressMenu=false
 	                fi
@@ -88,13 +75,8 @@ if [ $entryMatchCount -gt 0 ]; then
 	        while [ $numMenu == true ]; do # while loop to control validation of input
 	                if [ -z "$contactNum" ]; then # checks for empty string
 	                        echo
-	                        echo "No number entered. Please enter the contact number (0 to return to main menu): "
+	                        echo "No number entered. Please enter the contact number: "
 	                        read contactNum
-	                        if [ $contactNum -eq 0 ] 2> /dev/null # checks for entry of 0
-	                        then
-	                                numMenu=false
-	                                ./Menu
-	                        fi
 	                elif [[ $contactNum =~ $phoneRegEx ]]; then # check for phone number format
 	                        numMenu=false
 	                else
@@ -116,13 +98,8 @@ if [ $entryMatchCount -gt 0 ]; then
 	                        emailMenu=false
 	                else
 	                        echo
-	                        echo "Invalid email address entered. Please enter the email address again (0 to return to main menu): "
+	                        echo "Invalid email address entered. Please enter the email address again: "
 	                        read contactEmail
-	                        if [ $contactEmail -eq 0 ] 2> /dev/null # checks for entry of 0
-	                        then
-	                                numMenu=false
-	                                ./Menu
-	                        fi
 	                fi
 	        done
 	        echo
@@ -157,9 +134,7 @@ elif [ $bizMatchCount -gt 0 ]; then
                 ./Menu
 	else
 		echo
-		echo "Press any key to return to main menu."
-		read any
-		echo
+		exit 0
         fi
 else
 	echo "$newBiz" >> BusinessDetails
