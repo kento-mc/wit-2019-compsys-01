@@ -147,8 +147,18 @@ case $option in
 	done
 	;;
 3)	echo
-	echo "Please search for business name, number, address, email, etc: "
-	read find
+        echo "Please enter the business name, number, address, email, etc: "
+        read find
+	findMenu=true
+	while [ $findMenu == true ]; do # loop to validate entry
+		if [ -z "$find" ]; then # checks for empty string
+                        echo
+                        echo "No text entered. Please enter something to search for: "
+                        read find
+                else
+                        findMenu=false
+                fi
+	done
 	./FindBiz $find
 	;;
 4)	# Run a sub-menu for emailing contacts. It is enclosed in a while loop

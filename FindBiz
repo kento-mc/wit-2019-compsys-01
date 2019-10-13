@@ -16,9 +16,19 @@ then
 	if [[ $ans1 == y* || $ans1 == Y* ]]
 	then
 		echo
-		read -p "Please enter your search stuff" find
-		echo
-		./FindBiz $find
+		echo "Please enter the business name, number, address, email, etc: "
+		read find
+		findMenu=true
+	        while [ $findMenu == true ]; do # loop to validate entry
+        	        if [ -z "$find" ]; then # checks for empty string
+                	        echo
+                	        echo "No text entered. Please enter something to search for: "
+                	        read find
+                	else
+                	        findMenu=false
+                	fi
+        	done
+        	./FindBiz $find
 	else
 		echo
 		echo "Good bye!"
@@ -67,7 +77,6 @@ then
 			subMenu1=false
 			echo
 			echo "~~~~~~~~~~~~~~~~~~~~"
-			echo
 			singleResultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t----------\t----------\t----------\t----------\n'
 			if [ $choice -lt 10 ]; then
 				singleResult=$(echo "$selectFrom" | grep "count$choice" | cut -c 8-)
@@ -94,8 +103,7 @@ then
 			1)	echo
 				echo "Which field would you like to update?"
 				echo
-				#singleResultMenu=$'Business Name\tContact Name\tAddress\tPhone Number\tEmail Address\n----------\t----------\t----------\t----------\t----------\n'
-				#singleResultMenu+="$singleResult"
+				echo "~~~~~~~~~~~~~~~~~~~~"
 				echo "$singleResultMenu" | column -t -s $'\t' -n
 				echo
 				echo "~~~~~~~~~~~~~~~~~~~~"
@@ -113,7 +121,18 @@ then
 
 				case $choice2 in
 				1)	echo
-					read -p "Please enter the new business name: " newBizName
+					echo "Please enter the new business name: "
+					read newBizName
+					updateMenu=true
+				        while [ $updateMenu == true ]; do # loop to validate entry
+                				if [ -z "$newBizName" ]; then # checks for empty string
+                        				echo
+                        				echo "No text entered. Please enter the new business name: "
+                        				read newBizName
+                				else
+                        				updateMenu=false
+                				fi
+					done
 					toReplace=$(echo "$singleResult" | awk -F "\t" '{print $1}')
 					firstResult="$singleResult"
 					updatedResult=${singleResult/$toReplace/$newBizName}
@@ -123,7 +142,18 @@ then
 					echo
 					;;
 				2)	echo
-                                        read -p "Please enter the new contact name: " newContactName
+                                        echo "Please enter the new contact name: "
+					read newContactName
+                                        updateMenu=true
+                                        while [ $updateMenu == true ]; do # loop to validate entry
+                                                if [ -z "$newContactName" ]; then # checks for empty string
+                                                        echo
+                                                        echo "No text entered. Please enter the new contact name: "
+                                                        read newContactName
+                                                else
+                                                        updateMenu=false
+                                                fi
+                                        done
                                         toReplace=$(echo "$singleResult" | awk -F "\t" '{print $2}')
                                         firstResult="$singleResult"
                                         updatedResult=${singleResult/$toReplace/$newContactName}
@@ -133,7 +163,18 @@ then
                                         echo
 					;;
 				3)	echo
-                                        read -p "Please enter the new address: " newAddress
+                                        echo "Please enter the new address: "
+					read newAddress
+                                        updateMenu=true
+                                        while [ $updateMenu == true ]; do # loop to validate entry
+                                                if [ -z "$newAddress" ]; then # checks for empty string
+                                                        echo
+                                                        echo "No text entered. Please enter the new address: "
+                                                        read newAddress
+                                                else
+                                                        updateMenu=false
+                                                fi
+                                        done
                                         toReplace=$(echo "$singleResult" | awk -F "\t" '{print $3}')
                                         firstResult="$singleResult"
                                         updatedResult=${singleResult/$toReplace/$newAddress}
@@ -143,8 +184,19 @@ then
                                         echo
 					;;
 				4)	echo
-                                        read -p "Please enter the new phone number: " newPhoneNo
-                                        toReplace=$(echo "$singleResult" | awk -F "\t" '{print $4}')
+                                        echo "Please enter the new phone number: "
+					read newPhoneNo
+                    			updateMenu=true
+                                        while [ $updateMenu == true ]; do # loop to validate entry
+                                                if [ -z "$newPhoneNo" ]; then # checks for empty string
+                                                        echo
+                                                        echo "No text entered. Please enter the new phone number: "
+                                                        read newPhoneNo
+                                                else
+                                                        updateMenu=false
+                                                fi
+                                        done
+		                        toReplace=$(echo "$singleResult" | awk -F "\t" '{print $4}')
                                         firstResult="$singleResult"
                                         updatedResult=${singleResult/$toReplace/$newPhoneNo}
                                         sed -i "s/${firstResult}/${updatedResult}/" BusinessDetails
@@ -153,7 +205,18 @@ then
                                         echo
 					;;
 				5)	echo
-                                        read -p "Please enter the new email address: " newEmail
+                                        echo "Please enter the new email address: "
+					read newEmail
+					updateMenu=true
+                                        while [ $updateMenu == true ]; do # loop to validate entry
+                                                if [ -z "$newEmail" ]; then # checks for empty string
+                                                        echo
+                                                        echo "No text entered. Please enter the new email address: "
+                                                        read newEmail
+                                                else
+                                                        updateMenu=false
+                                                fi
+                                        done
                                         toReplace=$(echo "$singleResult" | awk -F "\t" '{print $5}')
                                         firstResult="$singleResult"
                                         updatedResult=${singleResult/$toReplace/$newEmail}
@@ -174,6 +237,7 @@ then
 	                                echo
 					;;
 				esac
+				./Menu
 				;;
 			2)	./Menu
 				;;
